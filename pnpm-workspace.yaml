@@ -1,0 +1,11 @@
+allowBuilds:
+  esbuild: true
+  lefthook: true
+  lightningcss: true
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - esbuild@0.24.3
+  - esbuild@0.28.1
+overrides:
+  esbuild@<=0.24.2: ^0.24.3
+  esbuild@>=0.17.0 <0.28.1: ^0.28.1
