@@ -19,3 +19,9 @@ todos.json
 # review-cycle
 .claude/.review-mark
 .claude/.no-review-gate
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/
