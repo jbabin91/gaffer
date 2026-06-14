@@ -24,5 +24,6 @@ live game; mechanics shift between editions.
 
 - `career-mode.md` — seasons, transfer windows, objectives, board expectations
 - `player-development.md` — overall, potential, growth, form, age
+- `youth-academy.md` — youth scouting, potential margins by age, reveal method
 - `transfers-and-finances.md` — transfer and wage budgets, windows, deals
 - `positions-and-roles.md` — position codes and secondary positions
