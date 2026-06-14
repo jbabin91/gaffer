@@ -32,4 +32,4 @@ Use `docs/decisions/0000-template.md`.
 - `0010-docker-deployment.md` — Docker image + compose as the canonical deploy (Proposed)
 - `0011-license-and-naming.md` — MIT license, named Gaffer (Proposed)
 - `0012-data-acquisition.md` — ship the importer, not the data (Proposed)
-- `0013-auth-and-invites.md` — Better Auth + invite-only registration (Proposed)
+- `0013-auth-and-invites.md` — Better Auth + invite-only registration

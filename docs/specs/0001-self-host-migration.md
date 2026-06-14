@@ -41,8 +41,8 @@ the schema, repositories, UI, and query layer.
    behind server functions; run migrations via `drizzle-kit` (replacing the
    browser runtime migrator). Still single-user, no auth.
 2. **Auth + invites.** Better Auth (email/password) + admin plugin; closed
-   sign-up gated by `better-auth-invitation-only` (`0013`). First user bootstraps
-   as admin. Pending a Better Auth 1.6 compatibility check.
+   sign-up gated by `better-auth-invitation-only` (`0013`, verified compatible
+   with Better Auth 1.6). First user bootstraps as admin.
 3. **User-owned data.** Add `userId` to `careers`; scope every career query and
    mutation to the authenticated user; enforce ownership in server functions.
 4. **Packaging.** Multi-stage Dockerfile, `docker-compose.yml` (app + Postgres),
@@ -63,7 +63,8 @@ the schema, repositories, UI, and query layer.
 
 ## Open questions
 
-- **Better Auth 1.6 compat:** confirm `better-auth-invitation-only` loads and its
-  gate fires on `better-auth@1.6.18` (`0013`); adopt-as-is vs email-optional fork.
+- **Invite plugin variant:** adopt `better-auth-invitation-only` as-is (email-bound
+  invites) vs the email-optional fork (open shareable links). 1.6 compatibility is
+  verified (`0013`).
 - **Test database:** keep PGlite (`createMemoryDb`) as the test db, or run a
   Postgres container in CI.
