@@ -11,8 +11,9 @@ import {
 } from 'drizzle-orm/pg-core';
 
 /**
- * Read-only reference catalog seeded from the public-domain Kaggle dataset.
- * Text + numbers only — no crests, photos, or EA branding (licensed likeness).
+ * Read-only reference catalog, populated by import — text + numbers only, no
+ * crests, photos, or EA branding (licensed likeness). Sourcing is governed by
+ * the data-acquisition decision (docs/decisions/0007, 0012).
  */
 export const playerCatalog = pgTable(
   'player_catalog',

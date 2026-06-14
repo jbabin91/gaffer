@@ -3,6 +3,9 @@
 Date: 2026-06-13
 Status: Accepted
 
+> A pivot to self-hosted multi-user is proposed in `0009`; this decision holds
+> until that migration (`specs/0001`) lands.
+
 ## Context
 
 A career companion holds a single user's data and benefits from working offline

@@ -31,3 +31,12 @@ Use `docs/ideas/0000-template.md`.
 - `0002-roster-actions.md` — edit, bench, and remove players from the squad
 - `0003-data-portability.md` — export/import a career as JSON; in-app catalog import
 - `0004-contract-and-form-entry.md` — capture contract, wage, and form data
+- `0005-scouting-shortlist.md` — transfer targets (tier, gap, sign-status)
+- `0006-catalog-import.md` — CSV/JSON importer + identity baseline + provenance
+- `0007-finances-and-budgets.md` — transfer + wage budgets, spent/remaining
+- `0008-transfer-plans.md` — sequenced offload → sign window plans
+- `0009-squad-status-and-roles.md` — player status + per-player planning fields
+
+Further candidates from the career spreadsheets (not yet written up): a
+formation / depth-chart view, youth-scouting assignments, and an aging /
+sell-at-peak review.

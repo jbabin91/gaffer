@@ -3,6 +3,9 @@
 Date: 2026-06-13
 Status: Accepted
 
+> Hosted model: the catalog is shared, read-only reference data, and how it is
+> populated is governed by `0012` (ship the tool, not the data).
+
 ## Context
 
 A searchable player catalog speeds up adding players, but it must not reproduce
@@ -13,8 +16,9 @@ endorsed by EA.
 
 The `player_catalog` table stores text and numeric attributes only (names,
 nationality, positions, numeric ratings) — never crests, photos, kits, or other
-EA branding. Catalog data is seeded from a public-domain (CC0) dataset and used
-purely as text/number reference for prefilling the add-player form.
+EA branding. How the catalog is populated is governed by `0012` (import-first,
+no bundled ratings); it serves as text/number reference for prefilling the
+add-player form.
 
 ## Alternatives considered
 

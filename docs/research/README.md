@@ -29,4 +29,5 @@ Use `docs/research/0000-template.md`.
 
 ## Index
 
-_No research docs yet._
+- `0001-fc-data-sourcing.md` — how FC player data is sourced (EA, SoFIFA, Kaggle)
+- `0002-better-auth-invite-plugins.md` — invite-plugin evaluation

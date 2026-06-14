@@ -3,6 +3,9 @@
 Date: 2026-06-13
 Status: Accepted
 
+> `0009` (self-hosted multi-user) amends this: on migration the seam points at
+> server functions rather than a local database. The seam itself stands.
+
 ## Context
 
 The app is local-first today, but we want to keep multi-device sync (e.g.

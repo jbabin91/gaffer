@@ -28,3 +28,8 @@ Use `docs/decisions/0000-template.md`.
 - `0006-keyed-development-snapshots.md` — append-keyed snapshots + denormalized ratings
 - `0007-catalog-text-and-numbers-only.md` — catalog stores text and numbers only
 - `0008-unit-integration-test-split.md` — Vitest unit/integration project split
+- `0009-self-hosted-multi-user.md` — self-hosted, multi-user, invite-based (Proposed)
+- `0010-docker-deployment.md` — Docker image + compose as the canonical deploy (Proposed)
+- `0011-license-and-naming.md` — MIT license, named Gaffer (Proposed)
+- `0012-data-acquisition.md` — ship the importer, not the data (Proposed)
+- `0013-auth-and-invites.md` — Better Auth + invite-only registration (Proposed)

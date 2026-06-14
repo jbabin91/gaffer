@@ -12,15 +12,16 @@ positions, and numeric attributes. It must never store or display:
 - Player photos or likenesses
 - Kits, or other EA branding or licensed artwork
 
-See `docs/decisions/0007`. Catalog data is seeded from a public-domain (CC0)
-dataset and is optional — the app works fully with manually entered players.
+See `docs/decisions/0007` and `0012`. The product ships an importer, not bundled
+ratings; the catalog is optional — the app works fully with manually entered
+players.
 
 ## In the UI
 
-- Surface a clear "not affiliated with EA Sports" framing where the catalog or
-  game data appears.
-- Player and club names are user-entered or sourced from the CC0 dataset; we do
-  not pull from EA's services.
+- Surface a "not affiliated with EA Sports" notice where the catalog or game
+  data appears.
+- Player and club names are user-entered or imported; the app does not fetch
+  from EA's or third-party services.
 
 ## When adding data
 

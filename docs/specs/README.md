@@ -2,7 +2,7 @@
 
 Scoped feature designs that implementation works against.
 
-A spec captures the _what_ and _how_ of a feature before code is written, bridging rough ideas and implementation.
+A spec captures the _what_ and _how_ of a feature before code is written.
 
 ## Conventions
 
@@ -32,5 +32,4 @@ Use `docs/specs/0000-template.md`.
 
 ## Index
 
-_No specs yet. The season-management feature is the leading candidate (see
-`docs/ideas/0001-season-management.md`)._
+- `0001-self-host-migration.md` — local-first → hosted multi-user (draft)
