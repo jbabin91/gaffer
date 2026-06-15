@@ -110,3 +110,10 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 - Do not commit or push without clear authority from the active profile or the current user request.
 - If a required sync or push is blocked, stop and report the exact command and error.
 <!-- END BEADS INTEGRATION -->
+
+## Commit & bead ordering
+
+When a commit is authorized and it completes a bead, do the bead bookkeeping
+**before** staging: close the finished bead and file any follow-up beads, then
+`git add` / `git commit`. The beads export (`.beads/issues.jsonl`) rides in the
+same commit rather than a trailing "chore: close bead" commit.

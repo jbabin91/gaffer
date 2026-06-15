@@ -66,3 +66,22 @@ vi.mock('#/modules/career/api/careers', async () => {
 
 Assert observable outcomes (data reappears after a mutation), not spies on
 `invalidateQueries` — that keeps the tests refactor-resilient.
+
+## End-to-end (Playwright)
+
+Playwright drives the real app in a browser. Specs live in `e2e/` as
+`*.spec.ts`.
+
+```bash
+pnpm test:e2e         # full suite (needs Docker)
+pnpm test:e2e:smoke   # @smoke-tagged critical paths only
+```
+
+- `e2e/global-setup.ts` starts a dedicated Postgres container (testcontainers,
+  port 5440) and migrates it; the dev server runs on port 3100. Both are
+  isolated from `pnpm dev` (:3000) and the dev database (:5432), and torn down
+  after the run.
+- `e2e/fixtures.ts` extends `test` with a `squadPage` Page Object and an
+  `{ auto: true }` fixture that resets the database before every test.
+- Page Objects live in `e2e/pages/` — use role/label locators, not CSS.
+- The suite runs serially (`workers: 1`) since tests share one database.
