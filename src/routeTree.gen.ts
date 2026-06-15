@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AppPlayersPlayerIdRouteImport } from './routes/_app/players/$playerId'
 
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/_public/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppPlayersPlayerIdRoute = AppPlayersPlayerIdRouteImport.update({
@@ -26,27 +32,31 @@ const AppPlayersPlayerIdRoute = AppPlayersPlayerIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/players/$playerId': typeof AppPlayersPlayerIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/players/$playerId': typeof AppPlayersPlayerIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_public/': typeof PublicIndexRoute
   '/_app/players/$playerId': typeof AppPlayersPlayerIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/players/$playerId'
+  fullPaths: '/' | '/players/$playerId' | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/players/$playerId'
-  id: '__root__' | '/_public/' | '/_app/players/$playerId'
+  to: '/' | '/players/$playerId' | '/api/auth/$'
+  id: '__root__' | '/_public/' | '/_app/players/$playerId' | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   PublicIndexRoute: typeof PublicIndexRoute
   AppPlayersPlayerIdRoute: typeof AppPlayersPlayerIdRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/players/$playerId': {
@@ -71,6 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   PublicIndexRoute: PublicIndexRoute,
   AppPlayersPlayerIdRoute: AppPlayersPlayerIdRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

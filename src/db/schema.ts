@@ -128,9 +128,103 @@ export const playerSnapshots = pgTable(
   (t) => [uniqueIndex('snapshot_player_week_idx').on(t.playerId, t.inGameWeek)],
 );
 
+// Better Auth tables. Field names mirror the required schema — regenerate with
+// `@better-auth/cli generate` when auth plugins change. See decision 0013.
+export const user = pgTable('user', {
+  banExpires: timestamp({ withTimezone: true }),
+  banned: boolean().default(false),
+  banReason: text(),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  email: text().notNull().unique(),
+  emailVerified: boolean().notNull().default(false),
+  id: text().primaryKey(),
+  image: text(),
+  name: text().notNull(),
+  role: text(),
+  updatedAt: timestamp({ withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+export const session = pgTable(
+  'session',
+  {
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    expiresAt: timestamp({ withTimezone: true }).notNull(),
+    id: text().primaryKey(),
+    impersonatedBy: text(),
+    ipAddress: text(),
+    token: text().notNull().unique(),
+    updatedAt: timestamp({ withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+    userAgent: text(),
+    userId: text()
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+  },
+  (t) => [index('session_user_idx').on(t.userId)],
+);
+
+export const account = pgTable(
+  'account',
+  {
+    accessToken: text(),
+    accessTokenExpiresAt: timestamp({ withTimezone: true }),
+    accountId: text().notNull(),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    id: text().primaryKey(),
+    idToken: text(),
+    password: text(),
+    providerId: text().notNull(),
+    refreshToken: text(),
+    refreshTokenExpiresAt: timestamp({ withTimezone: true }),
+    scope: text(),
+    updatedAt: timestamp({ withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+    userId: text()
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+  },
+  (t) => [index('account_user_idx').on(t.userId)],
+);
+
+export const verification = pgTable(
+  'verification',
+  {
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    expiresAt: timestamp({ withTimezone: true }).notNull(),
+    id: text().primaryKey(),
+    identifier: text().notNull(),
+    updatedAt: timestamp({ withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+    value: text().notNull(),
+  },
+  (t) => [index('verification_identifier_idx').on(t.identifier)],
+);
+
 export const careersRelations = relations(careers, ({ many }) => ({
   players: many(players),
   seasons: many(seasons),
+}));
+
+export const userRelations = relations(user, ({ many }) => ({
+  accounts: many(account),
+  sessions: many(session),
+}));
+
+export const sessionRelations = relations(session, ({ one }) => ({
+  user: one(user, { fields: [session.userId], references: [user.id] }),
+}));
+
+export const accountRelations = relations(account, ({ one }) => ({
+  user: one(user, { fields: [account.userId], references: [user.id] }),
 }));
 
 export const seasonsRelations = relations(seasons, ({ one }) => ({

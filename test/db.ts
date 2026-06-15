@@ -32,6 +32,6 @@ export function getTestDb(): DB {
  */
 export async function resetDb(): Promise<void> {
   await getTestDb().execute(
-    sql`TRUNCATE player_snapshots, players, seasons, careers, player_catalog RESTART IDENTITY CASCADE`,
+    sql`TRUNCATE player_snapshots, players, seasons, careers, player_catalog, "user", verification RESTART IDENTITY CASCADE`,
   );
 }

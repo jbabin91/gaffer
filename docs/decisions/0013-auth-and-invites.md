@@ -24,8 +24,9 @@ proven.
 - **Invite gate via `better-auth-invitation-only`** — a `before`-sign-up hook
   that rejects sign-ups without a valid invite code (hashed codes, expiry,
   max-uses, rate limits, email + OAuth).
-- **Roles: member and admin only.** No resource-level scopes — every user owns
-  their own private data (`0009`), so there is nothing to share-scope.
+- **Roles: `user` and `admin` only** (Better Auth admin-plugin defaults; the
+  non-admin role is `user`). No resource-level scopes — every user owns their own
+  private data (`0009`), so there is nothing to share-scope.
 - **Invites are email-bound** — the admin creates a code bound to a specific
   address (see Verification); the gate enforces `invitation.email === signup
 email`. The email-optional fork (open shareable links) is **not** adopted: this
