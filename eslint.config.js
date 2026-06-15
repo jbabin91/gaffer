@@ -64,6 +64,7 @@ export default defineConfig(
       '**/*.integration.{ts,tsx}',
       'src/lib/email.ts',
       'src/modules/*/api/*.ts',
+      'src/start.ts',
     ],
     rules: {
       'no-restricted-syntax': [
