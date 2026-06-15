@@ -5,8 +5,8 @@ import { players, playerSnapshots } from '#/db/schema';
 
 const rating = z.number().int().min(0).max(99);
 
-// Player columns are column-synced via drizzle-zod; overall/potential/value are
-// extra inputs that seed the week-0 snapshot rather than the player row.
+// overall/potential/marketValue aren't player columns; they seed the week-0
+// snapshot rather than the player row.
 export const addPlayerInput = createInsertSchema(players)
   .pick({
     age: true,

@@ -3,8 +3,8 @@ import { z } from 'zod';
 
 import { careers } from '#/db/schema';
 
-// Column-synced via drizzle-zod, extended with the season fields createCareer
-// seeds. Shared by the api validator and any client-side form.
+// Season fields are extended here because createCareer seeds a season alongside
+// the career; they aren't columns on the careers table.
 export const createCareerInput = createInsertSchema(careers)
   .pick({ managerName: true, name: true })
   .extend({

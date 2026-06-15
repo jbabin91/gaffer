@@ -33,8 +33,9 @@ export async function getPlayer(
 }
 
 /**
- * Add a player to a career's squad. Ratings are snapshot-owned: an overall
- * seeds a week-0 snapshot; the insert and snapshot share one transaction.
+ * Ratings are snapshot-owned: an overall seeds a week-0 snapshot, sharing the
+ * insert's transaction.
+ * @throws when the player insert returns no row.
  */
 export async function addPlayer(
   db: DB,
@@ -76,10 +77,10 @@ export async function removePlayer(db: DB, playerId: string): Promise<void> {
 }
 
 /**
- * Append a development snapshot. Snapshots are keyed by (player, in-game week):
- * re-recording the same week overwrites that point rather than duplicating it,
- * which keeps the trend line clean. Also refreshes the player's denormalized
- * "current" ratings used by squad lists.
+ * Keyed by (player, in-game week): re-recording a week overwrites that point
+ * instead of duplicating it. Also refreshes the player's denormalized current
+ * ratings used by squad lists.
+ * @throws when the upsert returns no row.
  */
 export async function recordSnapshot(
   db: Database,
@@ -90,10 +91,8 @@ export async function recordSnapshot(
     .insert(playerSnapshots)
     .values({ playerId, ...input })
     .onConflictDoUpdate({
-      // Coalesce to null so re-recording a week with a field cleared overwrites
-      // it. Drizzle omits `undefined` from an update set, which would otherwise
-      // leave the old value behind — diverging from the insert path, where an
-      // omitted field defaults to null.
+      // Drizzle omits `undefined` from an update set, so coalesce to null to
+      // clear a previously-set field on re-record (insert defaults it to null).
       set: {
         form: input.form ?? null,
         marketValueEur: input.marketValueEur ?? null,

@@ -5,8 +5,7 @@ import {
   recordSnapshotInput,
 } from '#/modules/player/schemas/players';
 
-// These bounds live only in zod — the columns are plain integer/text — so the
-// schemas are the sole guard against bad ratings and empty names reaching a row.
+// The columns are plain integer/text, so these zod bounds are the only guard against bad ratings and empty names.
 describe('addPlayerInput', () => {
   it('requires a non-empty name; other fields are optional', () => {
     expect(addPlayerInput.safeParse({}).success).toBe(false);

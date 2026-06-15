@@ -23,8 +23,7 @@ import {
 
 const dbRef = vi.hoisted(() => ({ current: null as DB | null }));
 
-// The hooks call server functions over RPC in production; in tests we route the
-// api module straight to the services against the shared test database.
+// Route the server-function api module to the services against the test db.
 vi.mock('#/modules/player/api/players', async () => {
   const svc = await import('#/modules/player/services/players');
   return {
@@ -119,8 +118,7 @@ describe('useRecordSnapshot', () => {
       await result.current.record.mutateAsync({ inGameWeek: 5, overall: 90 });
     });
 
-    // detail(playerId) prefix-matches snapshots(playerId), so a single
-    // invalidation refreshes both; squad invalidation updates the denormalized rating.
+    // detail(playerId) prefix-matches snapshots(playerId), so one invalidation refreshes both.
     await waitFor(() => {
       expect(result.current.player.data?.overall).toBe(90);
       expect(

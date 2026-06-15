@@ -14,9 +14,11 @@ export type RequestLogBase = {
 
 type RequestOutcome = { durationMs: number; error?: unknown; status?: number };
 
-// A loggable thrown error or a 5xx response is a fault (error level, err attached);
-// everything else — success, redirects, notFound control flow — logs at info.
-// Logging failures fall back to a minimal line so they never change the request outcome.
+/**
+ * A loggable thrown error or a 5xx response is a fault (error level, err attached);
+ * everything else — success, redirects, notFound control flow — logs at info.
+ * Logging failures fall back to a minimal line so they never change the request outcome.
+ */
 export function emitRequestLog(
   logger: RequestLogger,
   base: RequestLogBase,
@@ -53,8 +55,7 @@ export function emitRequestLog(
   }
 }
 
-// Time a request, emit the one canonical line (with the status on success or the
-// error on throw), and rethrow so the outcome is unchanged.
+/** Emits a request log for both success and failure, then re-throws on failure. */
 export async function runInstrumented<
   TResult extends { response: { status: number } },
 >(

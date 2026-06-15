@@ -6,8 +6,7 @@ import {
   recordSnapshotArgs,
 } from '#/modules/player/schemas/players';
 
-// Service imports are dynamic so the server-only query layer stays out of the
-// client bundle; only the RPC stub (and the validators) ship to the browser.
+// Dynamic import keeps the server-only query layer out of the client bundle.
 async function service() {
   const { getDb } = await import('#/db/client');
   return {

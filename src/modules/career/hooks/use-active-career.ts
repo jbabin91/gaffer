@@ -5,7 +5,7 @@ import { useCareers } from './use-careers';
 const STORAGE_KEY = 'fc:activeCareerId';
 
 // localStorage throws in Safari private mode / when storage is blocked; degrade
-// to in-memory state rather than crashing the effect or click handler.
+// to in-memory state rather than crashing.
 function readStored(): string | undefined {
   try {
     return localStorage.getItem(STORAGE_KEY) ?? undefined;
@@ -23,8 +23,9 @@ function writeStored(id: string): void {
 }
 
 /**
- * Tracks which career is active, persisted to localStorage. Falls back to the
- * most recent career when the stored one is missing (e.g. deleted).
+ * Active career is the localStorage-stored selection, falling back to the most
+ * recent career when none is stored or the stored id is gone. Storage failures
+ * (Safari private mode) degrade to in-memory selection.
  */
 export function useActiveCareer() {
   const careers = useCareers();

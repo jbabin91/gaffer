@@ -28,7 +28,6 @@ describe('importCatalog', () => {
       ]),
     ).toBe(3);
 
-    // Re-importing existing ids inserts nothing; only the new id 4 counts.
     const inserted = await importCatalog(db, [
       row(1, 'Alpha Renamed'),
       row(2, 'Bravo'),

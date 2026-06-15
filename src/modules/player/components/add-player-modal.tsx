@@ -131,8 +131,8 @@ export function AddPlayerModal({ careerId }: AddPlayerModalProps) {
                 <TextField
                   isRequired
                   value={form.name}
-                  // Editing the name detaches it from a prefilled catalog entry,
-                  // so drop the catalogId to avoid a false FK link.
+                  // Editing the name drops catalogId to avoid a false FK link to
+                  // the prefilled catalog entry.
                   onChange={(v) =>
                     setForm((prev) => ({
                       ...prev,

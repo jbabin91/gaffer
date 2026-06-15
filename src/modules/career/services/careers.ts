@@ -19,6 +19,10 @@ export async function getCareer(
   return career;
 }
 
+/**
+ * Creates a career and its initial current season in one transaction.
+ * @throws when the career insert returns no row.
+ */
 export async function createCareer(
   db: DB,
   input: CreateCareerInput,
@@ -45,9 +49,8 @@ export async function createCareer(
 }
 
 /**
- * The career's current season, honoring the one-current-per-career invariant
- * (partial-unique index). Returns undefined when no season is flagged current
- * rather than guessing the newest.
+ * Relies on the one-current-per-career partial-unique index; returns undefined
+ * when no season is flagged current rather than guessing the newest.
  */
 export async function getCurrentSeason(
   db: DB,

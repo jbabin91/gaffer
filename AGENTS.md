@@ -52,6 +52,38 @@ skills:
 use: "@tanstack/virtual-file-routes#virtual-file-routes"
 <!-- intent-skills:end -->
 
+## Comment policy
+
+Comments earn their place by explaining **why**, not **what**. Default to
+deleting unless the absence could cause a real mistake or wasted time — a
+why-comment still has to be non-obvious.
+
+**Remove** comments that:
+
+- Restate what the code does, or echo a name, type, or signature
+- Label or group sections (`// helpers`, `// icon`, `/* Bundler mode */`)
+- Narrate test steps (`// arrange`, `// insert a user`, `// assert it worked`)
+- Carry hedges or AI lead-ins (`Note:`, `Here we…`, `basically`, `just`)
+- Point at a PR or commit (`added for X`, `used by Y`)
+- Leave a TODO with no tracked issue
+
+**Keep** only comments that capture something the code can't show: an ordering
+or concurrency invariant, a footgun, a workaround for a library/runtime/bundler
+quirk (with a ref when one exists), or security/correctness reasoning. One line
+where possible. Lint directives
+(`oxlint-disable`, `@ts-check`, `/* empty */`) are not prose — keep them.
+
+### JSDoc
+
+`/** */` is the form for the exported utility surface (`src/lib`, services,
+hooks, `src/db` helpers), where a non-obvious contract should reach a caller's
+editor on hover; a `//` comment does not. Same why bar: document only an
+invariant, footgun, side effect, non-obvious return, or an error worth
+`@throws`. Use `@throws` for errors a function can raise; reach for `@param` /
+`@returns` only to add meaning the type lacks (a unit, a clamped range), never
+to echo a name or type. No JSDoc on components, thin wrappers, schemas, or
+anything the signature already answers.
+
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:6cd5cc61 -->
 
 ## Beads Issue Tracker

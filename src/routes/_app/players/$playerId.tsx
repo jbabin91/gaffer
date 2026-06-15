@@ -64,7 +64,7 @@ function PlayerPage() {
             {p.nationality && <span>{p.nationality}</span>}
           </div>
         </div>
-        {/* Wait for history so the modal seeds the correct next week, not week 1. */}
+        {/* Gate on loaded history so the modal seeds the next week, not week 1. */}
         {snapshots.isSuccess ? (
           <RecordSnapshotModal
             careerId={p.careerId}

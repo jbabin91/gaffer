@@ -41,7 +41,6 @@ export function LineChart({
   data,
   dataKey,
 
-  // XAxis
   displayEdgeLabelsOnly = false,
   hideGridLines = false,
 
@@ -54,7 +53,6 @@ export function LineChart({
 
   legendProps,
   lineProps,
-  // Components
   tooltip = true,
 
   tooltipProps,
@@ -62,7 +60,6 @@ export function LineChart({
 
   valueFormatter = (value: number) => value.toString(),
   xAxisProps,
-  // YAxis
   yAxisProps,
   ...props
 }: LineChartProps) {

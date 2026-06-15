@@ -11,8 +11,7 @@ import { useCareers, useCreateCareer } from './use-careers';
 
 const dbRef = vi.hoisted(() => ({ current: null as DB | null }));
 
-// The hooks call server functions over RPC in production; in tests we route the
-// api module straight to the services against the shared test database.
+// Route the server-function api module to the services against the test db.
 vi.mock('#/modules/career/api/careers', async () => {
   const svc = await import('#/modules/career/services/careers');
   return {

@@ -23,6 +23,8 @@ let dbInstance: DB | undefined;
  *
  * Server-only: data access flows through TanStack Start server functions, never
  * straight from the browser.
+ *
+ * @throws {TypeError} when called in the browser.
  */
 export function getDb(): DB {
   if (globalThis.window !== undefined) {

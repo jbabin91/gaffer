@@ -10,8 +10,10 @@ const LOG_LEVELS = new Set([
   'silent',
 ]);
 
-// Exported so level resolution is unit-testable. Falls back rather than passing
-// an unrecognized level to pino, which throws at construction.
+/**
+ * Falls back to a default rather than passing an unrecognized level to pino,
+ * which would throw at construction.
+ */
 export function resolveLevel(
   envLevel: string | undefined,
   isDev: boolean,

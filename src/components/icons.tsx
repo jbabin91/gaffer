@@ -1,6 +1,5 @@
-// Central icon registry. App code uses `Icons.<name>` rather than importing
-// `@heroicons/react` directly, so the icon set — or the underlying library —
-// can change in one place.
+// App code uses `Icons.<name>` rather than importing heroicons directly, so the
+// icon set or library can be swapped in one place.
 import {
   ArrowLeftIcon,
   ArrowRightIcon,

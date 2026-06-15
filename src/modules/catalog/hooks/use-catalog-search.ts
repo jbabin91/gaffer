@@ -9,8 +9,7 @@ export const catalogQueries = {
       enabled: term.trim().length >= 2,
       queryFn: () => searchCatalogFn({ data: term }),
       queryKey: [...catalogQueries.searches(), term],
-      // Optional sub-feature: degrade inline (CatalogResults) instead of letting
-      // a search failure trip the global throwOnError and crash the whole app.
+      // Degrade inline instead of letting a failure trip the global throwOnError.
       throwOnError: false,
     }),
   searches: () => [...catalogQueries.all(), 'search'] as const,

@@ -10,8 +10,7 @@ describe('runMigrations', () => {
   it('is idempotent — a second run records nothing and leaves a usable schema', async () => {
     const db = getTestDb();
 
-    // The container is already migrated by global-setup; the journal is populated
-    // and a second run must add no entries.
+    // global-setup already migrated the container, so the journal is pre-populated.
     const before = await db.execute<{ c: number }>(journalCount);
     expect(before.rows[0]?.c).toBeGreaterThan(0);
 
@@ -20,7 +19,7 @@ describe('runMigrations', () => {
     const after = await db.execute<{ c: number }>(journalCount);
     expect(after.rows[0]?.c).toBe(before.rows[0]?.c);
 
-    // Schema is present and queryable (would throw if migrations hadn't run).
+    // No expect: a bare query throws if the schema isn't migrated.
     await db.execute(sql`SELECT 1 FROM players LIMIT 0`);
   });
 });

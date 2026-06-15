@@ -4,6 +4,10 @@ import type { DB } from '#/db/client';
 
 import { type CatalogPlayer, playerCatalog } from '#/db/schema';
 
+/**
+ * Returns an empty array for queries under 2 trimmed characters. LIKE
+ * wildcards in the term are escaped so `%`/`_` match literally.
+ */
 export async function searchCatalog(
   db: DB,
   query: string,
@@ -31,8 +35,9 @@ export async function catalogCount(db: DB): Promise<number> {
 }
 
 /**
- * Bulk-load catalog rows (e.g. parsed from the Kaggle CSV). Idempotent on id.
- * Text + numbers only — never store crests, photos, or EA branding.
+ * Idempotent on id (onConflictDoNothing). Text + numbers only — never store
+ * crests, photos, or EA branding.
+ * @returns count of rows actually inserted (conflicts are skipped).
  */
 export async function importCatalog(
   db: DB,

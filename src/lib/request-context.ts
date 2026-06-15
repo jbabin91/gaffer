@@ -10,7 +10,7 @@ export function runWithRequestContext<T>(store: RequestStore, fn: () => T): T {
   return storage.run(store, fn);
 }
 
-// No-op outside a request so call sites in services and db layers never need to guard.
+/** No-op outside a request so call sites in services and db layers never need to guard. */
 export function addRequestFields(fields: Record<string, unknown>): void {
   const store = storage.getStore();
   if (store) Object.assign(store.fields, fields);
@@ -20,8 +20,10 @@ export function getRequestLog(): Logger | undefined {
   return storage.getStore()?.log;
 }
 
-// Prefer an inbound correlation id (cf-ray ties app logs to Cloudflare's edge
-// logs) before minting one.
+/**
+ * Prefer an inbound correlation id (cf-ray ties app logs to Cloudflare's edge
+ * logs) before minting one.
+ */
 export function makeRequestId(request: Request): string {
   return (
     request.headers.get('cf-ray') ??

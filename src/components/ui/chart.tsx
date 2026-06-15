@@ -42,7 +42,6 @@ import { twJoin, twMerge } from 'tailwind-merge';
 import { useIsMobile } from '#/hooks/use-mobile';
 import { cx } from '#/lib/primitive';
 
-// #region Chart Types
 type ChartType = 'default' | 'stacked' | 'percent';
 type ChartLayout = 'horizontal' | 'vertical' | 'radial';
 type IntervalType = 'preserveStartEnd' | 'equidistantPreserveStart';

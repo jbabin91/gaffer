@@ -2,8 +2,7 @@ import { createServerFn } from '@tanstack/react-start';
 
 import { createCareerInput } from '#/modules/career/schemas/careers';
 
-// Service imports are dynamic so the server-only query layer stays out of the
-// client bundle; only the RPC stub (and the validator) ships to the browser.
+// Dynamic imports keep the server-only query layer out of the client bundle.
 export const listCareersFn = createServerFn({ method: 'GET' }).handler(
   async () => {
     const { getDb } = await import('#/db/client');

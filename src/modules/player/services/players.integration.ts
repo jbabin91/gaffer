@@ -52,8 +52,7 @@ describe('addPlayer', () => {
   });
 
   it('does not persist ratings without a backing snapshot', async () => {
-    // potential without overall: no snapshot is recorded, so the denormalized
-    // rating must stay null rather than being born out of sync.
+    // No overall means no snapshot, so the denormalized rating must stay null rather than born out of sync.
     const player = await addPlayer(db, careerId, {
       name: 'Potential Only',
       potential: 88,
@@ -63,9 +62,7 @@ describe('addPlayer', () => {
   });
 
   it('rolls back the player insert when seeding its snapshot fails', async () => {
-    // Wrap the db so the in-transaction snapshot insert throws. The player
-    // insert that ran first in the same transaction must roll back, leaving no
-    // orphan row whose ratings have no backing snapshot.
+    // Force the in-transaction snapshot insert to throw; the earlier player insert must roll back with it.
     const failOnSnapshot = new Proxy(db, {
       get(target, prop, receiver) {
         if (prop !== 'transaction') return Reflect.get(target, prop, receiver);

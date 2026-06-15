@@ -12,8 +12,7 @@ import { useActiveCareer } from './use-active-career';
 const STORAGE_KEY = 'fc:activeCareerId';
 const dbRef = vi.hoisted(() => ({ current: null as DB | null }));
 
-// useActiveCareer reads the careers list through a server function; route the
-// api module to the service against the shared test database.
+// Route the server-function api module to the service against the test db.
 vi.mock('#/modules/career/api/careers', async () => {
   const svc = await import('#/modules/career/services/careers');
   return { listCareersFn: () => svc.listCareers(dbRef.current!) };
@@ -32,8 +31,7 @@ describe('useActiveCareer', () => {
   it('resolves to the stored career when it still exists', async () => {
     const first = await createCareer(db, { name: 'First' });
     await createCareer(db, { name: 'Second' });
-    // First is the older career, so it is not the most-recent default; getting
-    // it back proves the stored id wins over the fallback.
+    // First is not the most-recent default, so getting it back proves the stored id wins over the fallback.
     localStorage.setItem(STORAGE_KEY, first.id);
 
     const { result } = renderHookWithClient(() => useActiveCareer());

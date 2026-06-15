@@ -19,8 +19,10 @@ import {
   type RecordSnapshotInput,
 } from '#/modules/player/schemas/players';
 
-// snapshots nests under details, so invalidating a player's detail also
-// refreshes its snapshots.
+/**
+ * snapshots keys are nested under the detail key so a detail invalidation
+ * prefix-matches and refreshes them too.
+ */
 export const playerQueries = {
   all: () => ['players'] as const,
   detail: (playerId: string) =>
@@ -86,8 +88,6 @@ export function useRecordSnapshot(playerId: string, careerId: string) {
   return useMutation({
     mutationFn: (input: RecordSnapshotInput) =>
       recordSnapshotFn({ data: { input, playerId } }),
-    // detail(playerId) prefix-matches snapshots(playerId), so one invalidation
-    // refreshes both the player and its history.
     onSuccess: () =>
       Promise.all([
         qc.invalidateQueries({
