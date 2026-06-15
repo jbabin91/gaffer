@@ -1,30 +1,39 @@
 # Architecture
 
-A local-first, browser-only companion for EA Sports FC 26 manager career mode.
+A companion for EA Sports FC 26 manager career mode, backed by a hosted Postgres
+behind TanStack Start server functions. Single-user for now; accounts and invites
+land in a later phase (see `docs/specs/0001`).
 
 ## Shape
 
-- **Local-first, no backend.** All data lives in the browser via PGlite
-  (Postgres on WebAssembly) persisted to IndexedDB. There is no server or API.
-- **Client-only database.** `getDb()` in `src/db/client.ts` throws under SSR and
-  is the single entry point to the database. UI is gated on mount so queries run
-  client-side; no route loader touches the database.
+- **Server data layer.** Data lives in a Postgres database reached over
+  node-postgres. `getDb()` in `src/db/client.ts` is **server-only** (it throws in
+  the browser) and is the single entry point to the database.
+- **Data access via server functions.** The browser never touches the database;
+  it calls TanStack Start server functions (`createServerFn`) over an RPC bridge.
+  `DATABASE_URL` is validated at the server boundary by `src/configs/env.ts`
+  (t3-env).
 
 ## Feature modules
 
 Code is organized by feature under `src/modules/<feature>/`:
 
-- `api/` — pure repository functions, `fn(db, …)` (see `docs/decisions/0005`)
-- `hooks/` — TanStack Query hooks and query-options factories
-- `components/` — React components
-- `lib/` — small helpers
+- `schemas/` — zod input schemas (drizzle-zod, column-synced) plus the inferred
+  input types. Isomorphic: the api validators and any client form share them.
+- `services/` — query logic, `fn(db, …)` (server-only).
+- `api/` — `createServerFn` endpoints. They dynamic-import their services so the
+  server-only query layer stays out of the client bundle (only the RPC stub and
+  the validator ship to the browser).
+- `hooks/` — TanStack Query hooks and query-options factories; call the api/
+  server functions.
+- `components/` — React components.
 
 Current modules: `career`, `player`, `catalog`.
 
 ## Data flow
 
 ```text
-component → hook (TanStack Query) → repository fn(db, …) → Drizzle → PGlite
+component → hook (TanStack Query) → api server fn (RPC) → service → Drizzle → Postgres
 ```
 
 - Query keys use co-located query-options factories (the TkDodo pattern) so a
@@ -35,8 +44,8 @@ component → hook (TanStack Query) → repository fn(db, …) → Drizzle → P
 - `staleTime: Infinity` — the only writer is the user's own mutations, which
   invalidate the keys they touch.
 
-## The sync seam
+## The service seam
 
-Repositories take the database as an argument and never reach for `getDb()`
-themselves. That keeps the database the one place a future sync engine (Electric
-or TanStack DB) would plug in, without touching feature code.
+Services take the database as an argument and never reach for `getDb()`
+themselves — `getDb()` is injected by the api layer. That keeps services pure and
+unit-testable against any database handle (production pool or test container).

@@ -1,10 +1,9 @@
 import { defineConfig } from 'drizzle-kit';
 
-// PGlite speaks Postgres. drizzle-kit only generates SQL here; migrations are
-// applied at runtime in the browser (see src/db/migrate.ts).
 export default defineConfig({
+  casing: 'snake_case',
+  dbCredentials: { url: process.env.DATABASE_URL ?? '' },
   dialect: 'postgresql',
-  driver: 'pglite',
   out: './src/db/migrations',
   schema: './src/db/schema.ts',
   strict: true,

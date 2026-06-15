@@ -3,6 +3,13 @@
 Date: 2026-06-13
 Status: Accepted
 
+> **Update (2026-06-14, P1 server data layer):** the split stands, but two
+> details changed. Integration tests are now named `*.integration.{ts,tsx}`
+> (the project glob keys on the `.integration.` segment, dropping the redundant
+> `.test`), and they run against a real Postgres container (testcontainers, one
+> per run) instead of in-memory PGlite — PGlite was removed with the move to a
+> hosted Postgres. See `docs/development/testing.md` for the current harness.
+
 ## Context
 
 Repository and hook tests run against a real in-memory PGlite (`createMemoryDb`),
@@ -13,8 +20,8 @@ future pre-commit step) and keep the slower ones for full runs and CI.
 ## Decision
 
 Use Vitest `projects`: `unit` (`**/*.test.{ts,tsx}`, excluding integration) and
-`integration` (`**/*.integration.test.{ts,tsx}`). Files that touch a database
-are named `*.integration.test.*`. Scripts: `pnpm test` (all), `pnpm test:unit`,
+`integration` (`**/*.integration.{ts,tsx}`). Files that touch a database
+are named `*.integration.{ts,tsx}`. Scripts: `pnpm test` (all), `pnpm test:unit`,
 `pnpm test:integration`.
 
 ## Alternatives considered
@@ -25,5 +32,5 @@ are named `*.integration.test.*`. Scripts: `pnpm test` (all), `pnpm test:unit`,
 ## Consequences
 
 - Positive: `test:unit` is near-instant; the split is self-documenting via filenames.
-- Negative: Contributors must name database-touching tests `*.integration.test.*`.
+- Negative: Contributors must name database-touching tests `*.integration.{ts,tsx}`.
 - Follow-ups: Wire `test:unit` into pre-commit once the test step is added (see `docs/development/workflows.md`).

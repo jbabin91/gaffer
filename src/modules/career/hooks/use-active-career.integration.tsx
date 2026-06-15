@@ -2,31 +2,29 @@
 import { act, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import * as dbClient from '#/db/client';
-import { createCareer } from '#/modules/career/api/careers';
+import { type DB } from '#/db/client';
+import { createCareer } from '#/modules/career/services/careers';
+import { getTestDb, resetDb } from '#test/db';
 import { renderHookWithClient } from '#test/harness';
 
 import { useActiveCareer } from './use-active-career';
 
 const STORAGE_KEY = 'fc:activeCareerId';
-const dbRef = vi.hoisted(() => ({ current: null as dbClient.DB | null }));
+const dbRef = vi.hoisted(() => ({ current: null as DB | null }));
 
-vi.mock('#/db/client', async (importOriginal) => {
-  const actual = await importOriginal<typeof dbClient>();
-  return {
-    ...actual,
-    getDb: () => {
-      if (!dbRef.current) throw new Error('test db not initialised');
-      return Promise.resolve(dbRef.current);
-    },
-  };
+// useActiveCareer reads the careers list through a server function; route the
+// api module to the service against the shared test database.
+vi.mock('#/modules/career/api/careers', async () => {
+  const svc = await import('#/modules/career/services/careers');
+  return { listCareersFn: () => svc.listCareers(dbRef.current!) };
 });
 
-let db: dbClient.DB;
+let db: DB;
 
 beforeEach(async () => {
   localStorage.clear();
-  db = await dbClient.createMemoryDb();
+  await resetDb();
+  db = getTestDb();
   dbRef.current = db;
 });
 

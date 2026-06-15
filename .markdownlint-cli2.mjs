@@ -34,6 +34,7 @@ export default {
     // MD060: Table column alignment
     MD060: false,
   },
-  // Use .gitignore patterns automatically
   gitignore: true,
+  // beads/ is tracked by git, so .gitignore doesn't cover it.
+  ignores: ['.beads/'],
 };

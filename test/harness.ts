@@ -9,8 +9,8 @@ export function createTestQueryClient(): QueryClient {
 
 /**
  * renderHook wrapped in a fresh QueryClientProvider. Returns the client too so
- * tests can assert on cache state. Pair with a `vi.mock('#/db/client')` that
- * points `getDb()` at a `createMemoryDb()` instance (see the hook test files).
+ * tests can assert on cache state. Pair with a `vi.mock` of the relevant api
+ * module that routes server functions to services against the test db.
  */
 export function renderHookWithClient<Result>(render: () => Result) {
   const queryClient = createTestQueryClient();

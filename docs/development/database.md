@@ -1,25 +1,28 @@
 # Database
 
-PGlite (Postgres on WebAssembly) with Drizzle ORM, persisted to IndexedDB.
+Postgres with Drizzle ORM, reached server-side over node-postgres.
 
 ## Client
 
 `src/db/client.ts` owns access:
 
-- `getDb()` — lazily opens the persisted database. Client-only: it throws under
-  SSR. A failed init (blocked IndexedDB, failed migration) is not cached, so a
-  later call can retry.
-- `createMemoryDb()` — a fresh in-memory database with migrations applied, used
-  by tests.
-- `DB` / `Transaction` / `Database` types — repository helpers accept `Database`
+- `getDb()` — returns a drizzle handle over a shared `pg.Pool` (lazy connect).
+  **Server-only**: it throws in the browser. The connection string comes from
+  `env.DATABASE_URL` (`src/configs/env.ts`, validated by t3-env). An idle-client
+  `error` listener keeps a pooled-connection failure from crashing the process.
+- `DB` / `Transaction` / `Database` types — service helpers accept `Database`
   (the db or a transaction handle) so they compose inside `db.transaction(…)`.
+
+Tests use a real Postgres container, not `getDb()` — see `docs/development/testing.md`.
 
 ## Schema and migrations
 
 - Schema lives in `src/db/schema.ts` (tables, relations, inferred types).
-- Migrations are SQL files under `src/db/migrations/`, bundled via
-  `import.meta.glob` and applied at runtime by `src/db/migrate.ts`.
-- Generate new migrations with Drizzle Kit after a schema change.
+- Drizzle uses `casing: 'snake_case'`, so camelCase columns map to snake_case
+  without per-column names.
+- Migrations are SQL files under `src/db/migrations/`, applied by the
+  node-postgres drizzle migrator (`src/db/migrate.ts`).
+- `pnpm db:generate` after a schema change; `pnpm db:migrate` to apply.
 
 ## Conventions
 

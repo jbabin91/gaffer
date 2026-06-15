@@ -7,11 +7,14 @@ Local setup, workflow, and project conventions.
 ```bash
 mise install   # pins Node + pnpm (see mise.toml)
 pnpm install   # also wires git hooks via lefthook's postinstall
-pnpm dev       # http://localhost:3000
+cp .env.example .env   # set DATABASE_URL to your Postgres
+pnpm db:migrate        # apply migrations
+pnpm dev               # http://localhost:3000
 ```
 
-The database is PGlite running in the browser and persisted to IndexedDB. There
-is no server or container to start.
+Data lives in a Postgres database reached server-side; set `DATABASE_URL` in
+`.env`. Integration tests start their own Postgres container, so they need
+Docker running.
 
 ## Scripts
 
@@ -21,14 +24,18 @@ pnpm lint               # oxlint, then eslint, then markdownlint
 pnpm format             # oxfmt
 pnpm test               # all tests
 pnpm test:unit          # pure tests, no database
-pnpm test:integration   # tests that spin up an in-memory PGlite
+pnpm test:integration   # tests against a real Postgres container (needs Docker)
+pnpm db:generate        # generate a migration after a schema change
+pnpm db:migrate         # apply migrations
 pnpm build
 ```
 
 ## Project structure
 
-- `src/modules/<feature>/{api,hooks,components,lib}` — feature modules
-- `src/db/` — Drizzle schema, the client seam, and migrations
+- `src/modules/<feature>/{schemas,services,api,hooks,components}` — feature
+  modules (see `docs/development/architecture.md`)
+- `src/db/` — Drizzle schema, the server client, and migrations
+- `src/configs/` — validated env and app configuration
 - `src/routes/` — TanStack Router file-based routes
 - `test/` — shared test harness, imported via `#test/*`
 

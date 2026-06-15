@@ -2,9 +2,14 @@
 import { act, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import * as dbClient from '#/db/client';
-import { createCareer } from '#/modules/career/api/careers';
-import { addPlayer } from '#/modules/player/api/players';
+import { type DB } from '#/db/client';
+import { createCareer } from '#/modules/career/services/careers';
+import {
+  type AddPlayerArgs,
+  type RecordSnapshotArgs,
+} from '#/modules/player/schemas/players';
+import { addPlayer } from '#/modules/player/services/players';
+import { getTestDb, resetDb } from '#test/db';
 import { renderHookWithClient } from '#test/harness';
 
 import {
@@ -16,24 +21,34 @@ import {
   useSquad,
 } from './use-players';
 
-const dbRef = vi.hoisted(() => ({ current: null as dbClient.DB | null }));
+const dbRef = vi.hoisted(() => ({ current: null as DB | null }));
 
-vi.mock('#/db/client', async (importOriginal) => {
-  const actual = await importOriginal<typeof dbClient>();
+// The hooks call server functions over RPC in production; in tests we route the
+// api module straight to the services against the shared test database.
+vi.mock('#/modules/player/api/players', async () => {
+  const svc = await import('#/modules/player/services/players');
   return {
-    ...actual,
-    getDb: () => {
-      if (!dbRef.current) throw new Error('test db not initialised');
-      return Promise.resolve(dbRef.current);
-    },
+    addPlayerFn: ({ data }: { data: AddPlayerArgs }) =>
+      svc.addPlayer(dbRef.current!, data.careerId, data.input),
+    getPlayerFn: ({ data }: { data: string }) =>
+      svc.getPlayer(dbRef.current!, data),
+    getPlayerSnapshotsFn: ({ data }: { data: string }) =>
+      svc.getPlayerSnapshots(dbRef.current!, data),
+    listSquadFn: ({ data }: { data: string }) =>
+      svc.listSquad(dbRef.current!, data),
+    recordSnapshotFn: ({ data }: { data: RecordSnapshotArgs }) =>
+      svc.recordSnapshot(dbRef.current!, data.playerId, data.input),
+    removePlayerFn: ({ data }: { data: string }) =>
+      svc.removePlayer(dbRef.current!, data),
   };
 });
 
-let db: dbClient.DB;
+let db: DB;
 let careerId: string;
 
 beforeEach(async () => {
-  db = await dbClient.createMemoryDb();
+  await resetDb();
+  db = getTestDb();
   dbRef.current = db;
   const career = await createCareer(db, { name: 'Career' });
   careerId = career.id;

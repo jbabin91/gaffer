@@ -5,18 +5,14 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { getDb } from '#/db/client';
-import {
-  createCareer,
-  type CreateCareerInput,
-  listCareers,
-} from '#/modules/career/api/careers';
+import { createCareerFn, listCareersFn } from '#/modules/career/api/careers';
+import { type CreateCareerInput } from '#/modules/career/schemas/careers';
 
 export const careerQueries = {
   all: () => ['careers'] as const,
   list: () =>
     queryOptions({
-      queryFn: async () => listCareers(await getDb()),
+      queryFn: () => listCareersFn(),
       queryKey: [...careerQueries.lists()],
     }),
   lists: () => [...careerQueries.all(), 'list'] as const,
@@ -29,8 +25,7 @@ export function useCareers() {
 export function useCreateCareer() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (input: CreateCareerInput) =>
-      createCareer(await getDb(), input),
+    mutationFn: (input: CreateCareerInput) => createCareerFn({ data: input }),
     onSuccess: () => qc.invalidateQueries({ queryKey: careerQueries.all() }),
   });
 }

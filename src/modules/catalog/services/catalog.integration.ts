@@ -1,15 +1,17 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import type { DB } from '#/db/client';
 import type { CatalogPlayer } from '#/db/schema';
 
-import { createMemoryDb, type DB } from '#/db/client';
+import { getTestDb, resetDb } from '#test/db';
 
 import { catalogCount, importCatalog, searchCatalog } from './catalog';
 
 let db: DB;
 
 beforeEach(async () => {
-  db = await createMemoryDb();
+  await resetDb();
+  db = getTestDb();
 });
 
 function row(id: number, fullName: string, extra: Partial<CatalogPlayer> = {}) {

@@ -34,5 +34,5 @@ When in doubt, keep the comment but make it tighter.
 ## Naming
 
 - Files are kebab-case (route param and layout files excepted).
-- Tests that touch a database end in `*.integration.test.*` (see
+- Tests that touch a database end in `*.integration.{ts,tsx}` (see
   `docs/development/testing.md`).

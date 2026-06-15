@@ -1,7 +1,10 @@
 allowBuilds:
+  cpu-features: false
   esbuild: true
   lefthook: true
   lightningcss: true
+  protobufjs: false
+  ssh2: false
   unrs-resolver: true
 minimumReleaseAgeExclude:
   - esbuild@0.24.3

@@ -14,15 +14,15 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
-    // Split by speed: `unit` is pure (no db); `integration` spins up an
-    // in-memory PGlite per test via createMemoryDb. Both inherit the root
-    // resolve/env; hook tests opt into jsdom with a `// @vitest-environment
-    // jsdom` docblock.
+    // Split by speed: `unit` is pure (no db); `integration` runs against one
+    // shared Postgres container (test/global-setup), resetting data between
+    // tests. Both inherit the root resolve/env; hook tests opt into jsdom with a
+    // `// @vitest-environment jsdom` docblock.
     projects: [
       {
         extends: true,
         test: {
-          exclude: [...configDefaults.exclude, '**/*.integration.test.*'],
+          exclude: [...configDefaults.exclude, '**/*.integration.{ts,tsx}'],
           include: ['**/*.test.{ts,tsx}'],
           name: 'unit',
         },
@@ -30,7 +30,11 @@ export default defineConfig({
       {
         extends: true,
         test: {
-          include: ['**/*.integration.test.{ts,tsx}'],
+          // One container, shared schema: run sequentially and reset data per
+          // test rather than racing parallel workers on the same database.
+          fileParallelism: false,
+          globalSetup: ['./test/global-setup.ts'],
+          include: ['**/*.integration.{ts,tsx}'],
           name: 'integration',
         },
       },

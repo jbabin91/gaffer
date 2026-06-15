@@ -15,7 +15,7 @@ pnpm build          # builds
 ## Also
 
 - New behavior has tests. Database-touching tests are named
-  `*.integration.test.*` (see `docs/development/testing.md`).
+  `*.integration.{ts,tsx}` (see `docs/development/testing.md`).
 - Comments follow the comment policy (`docs/development/code-standards.md`).
 - New decisions are recorded in `docs/decisions/`; new game mechanics the work
   relies on are noted in `docs/game/`.

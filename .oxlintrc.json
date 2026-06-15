@@ -438,11 +438,13 @@
     },
     {
       "files": [
+        "src/db/client.ts",
         "src/db/migrate.ts",
         "vite.config.ts",
         "**/*.stories.*",
         "**/*.test.*",
         "**/*.spec.*",
+        "**/*.integration.*",
         "e2e/**/*",
         "scripts/**/*",
         "test/**/*"
@@ -461,7 +463,12 @@
       "rules": { "preserve-caught-error": "off" }
     },
     {
-      "files": ["**/*.test.*", "**/*.spec.*", "test/**/*"],
+      "files": [
+        "**/*.test.*",
+        "**/*.spec.*",
+        "**/*.integration.*",
+        "test/**/*"
+      ],
       "plugins": ["vitest"],
       "rules": {
         "vitest/consistent-each-for": "error",

@@ -1,9 +1,14 @@
 import { eq } from 'drizzle-orm';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { createMemoryDb, type DB, type Transaction } from '#/db/client';
+import type { DB, Transaction } from '#/db/client';
+
 import { players, playerSnapshots, seasons } from '#/db/schema';
-import { createCareer, getCurrentSeason } from '#/modules/career/api/careers';
+import {
+  createCareer,
+  getCurrentSeason,
+} from '#/modules/career/services/careers';
+import { getTestDb, resetDb } from '#test/db';
 
 import {
   addPlayer,
@@ -18,7 +23,8 @@ let db: DB;
 let careerId: string;
 
 beforeEach(async () => {
-  db = await createMemoryDb();
+  await resetDb();
+  db = getTestDb();
   const career = await createCareer(db, { name: 'Test Career' });
   careerId = career.id;
 });

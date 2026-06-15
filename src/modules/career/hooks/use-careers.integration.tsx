@@ -2,26 +2,29 @@
 import { act, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import * as dbClient from '#/db/client';
+import { type DB } from '#/db/client';
+import { type CreateCareerInput } from '#/modules/career/schemas/careers';
+import { getTestDb, resetDb } from '#test/db';
 import { renderHookWithClient } from '#test/harness';
 
 import { useCareers, useCreateCareer } from './use-careers';
 
-const dbRef = vi.hoisted(() => ({ current: null as dbClient.DB | null }));
+const dbRef = vi.hoisted(() => ({ current: null as DB | null }));
 
-vi.mock('#/db/client', async (importOriginal) => {
-  const actual = await importOriginal<typeof dbClient>();
+// The hooks call server functions over RPC in production; in tests we route the
+// api module straight to the services against the shared test database.
+vi.mock('#/modules/career/api/careers', async () => {
+  const svc = await import('#/modules/career/services/careers');
   return {
-    ...actual,
-    getDb: () => {
-      if (!dbRef.current) throw new Error('test db not initialised');
-      return Promise.resolve(dbRef.current);
-    },
+    createCareerFn: ({ data }: { data: CreateCareerInput }) =>
+      svc.createCareer(dbRef.current!, data),
+    listCareersFn: () => svc.listCareers(dbRef.current!),
   };
 });
 
 beforeEach(async () => {
-  dbRef.current = await dbClient.createMemoryDb();
+  await resetDb();
+  dbRef.current = getTestDb();
 });
 
 describe('useCreateCareer', () => {

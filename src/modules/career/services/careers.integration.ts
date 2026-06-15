@@ -1,14 +1,17 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { createMemoryDb, type DB } from '#/db/client';
+import type { DB } from '#/db/client';
+
 import { seasons } from '#/db/schema';
+import { getTestDb, resetDb } from '#test/db';
 
 import { createCareer, getCurrentSeason } from './careers';
 
 let db: DB;
 
 beforeEach(async () => {
-  db = await createMemoryDb();
+  await resetDb();
+  db = getTestDb();
 });
 
 describe('createCareer', () => {
