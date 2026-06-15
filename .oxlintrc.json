@@ -49,7 +49,7 @@
         ],
         "patterns": [
           {
-            "group": ["@heroicons/react/*"],
+            "group": ["@heroicons/react/**"],
             "message": "Import from #/components/icons instead."
           }
         ]
@@ -413,7 +413,7 @@
       }
     },
     {
-      "files": ["src/components/icons.tsx"],
+      "files": ["src/components/icons.tsx", "src/components/ui/**"],
       "rules": {
         "no-restricted-imports": [
           "error",

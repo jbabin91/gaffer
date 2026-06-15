@@ -23,5 +23,8 @@ Intent UI components on React Aria, styled with Tailwind v4 (see
 
 ## Icons
 
-Icons come from `@heroicons/react` and are re-exported through
-`#/components/icons`; import from there rather than the heroicons subpaths.
+Icons come from `@heroicons/react`, exposed through an `Icons` registry in
+`#/components/icons`. Use `Icons.<name>` (e.g. `Icons.sun`) rather than importing
+heroicons directly, so the icon set — or the underlying library — can be swapped
+in one place. Direct `@heroicons/react` imports are restricted by lint outside
+the registry and `src/components/ui/`.
