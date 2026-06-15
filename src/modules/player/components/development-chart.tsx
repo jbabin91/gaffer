@@ -45,7 +45,6 @@ export function DevelopmentChart({ snapshots }: DevelopmentChartProps) {
   );
 }
 
-/** Sorted by in-game week so numeric x-axis spacing is accurate. */
 export function toChartData(snapshots: PlayerSnapshot[]) {
   return snapshots
     .toSorted((a, b) => a.inGameWeek - b.inGameWeek)
@@ -56,7 +55,6 @@ export function toChartData(snapshots: PlayerSnapshot[]) {
     }));
 }
 
-/** Y-axis bounds padded by 2 and clamped to the 0–99 rating scale. */
 export function ratingDomain(snapshots: PlayerSnapshot[]): [number, number] {
   const ratings = snapshots.flatMap((s) => [
     s.overall,

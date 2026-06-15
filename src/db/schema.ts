@@ -10,11 +10,8 @@ import {
   uniqueIndex,
 } from 'drizzle-orm/pg-core';
 
-/**
- * Read-only reference catalog, populated by import — text + numbers only, no
- * crests, photos, or EA branding (licensed likeness). Sourcing is governed by
- * the data-acquisition decision (docs/decisions/0007, 0012).
- */
+// Text + numbers only — no crests, photos, or EA branding (licensed likeness).
+// See docs/decisions/0007, 0012.
 export const playerCatalog = pgTable(
   'player_catalog',
   {
@@ -77,7 +74,6 @@ export const seasons = pgTable(
   ],
 );
 
-/** A tracked player within a career. May reference a catalog entry. */
 export const players = pgTable(
   'players',
   {
@@ -108,11 +104,6 @@ export const players = pgTable(
   (t) => [index('players_career_idx').on(t.careerId)],
 );
 
-/**
- * Development history, one row per (player, in-game week). Re-recording a week
- * upserts that point rather than appending a duplicate (see recordSnapshot),
- * keeping the trend line clean. Drives trend charts.
- */
 export const playerSnapshots = pgTable(
   'player_snapshots',
   {

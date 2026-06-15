@@ -19,12 +19,8 @@ import {
   type RecordSnapshotInput,
 } from '#/modules/player/schemas/players';
 
-/**
- * Query-options factory (TkDodo). Bare levels (`all`/`squads`/`details`) return
- * keys for fuzzy invalidation; leaf levels return `queryOptions` usable by
- * `useQuery`, `useSuspenseQuery`, and router `ensureQueryData`. `snapshots`
- * nests under `details` so invalidating a player's detail also refreshes it.
- */
+// snapshots nests under details, so invalidating a player's detail also
+// refreshes its snapshots.
 export const playerQueries = {
   all: () => ['players'] as const,
   detail: (playerId: string) =>
