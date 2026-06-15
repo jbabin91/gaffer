@@ -33,3 +33,4 @@ Use `docs/decisions/0000-template.md`.
 - `0011-license-and-naming.md` — MIT license, named Gaffer (Proposed)
 - `0012-data-acquisition.md` — ship the importer, not the data (Proposed)
 - `0013-auth-and-invites.md` — Better Auth + invite-only registration
+- `0014-state-management.md` — layered state model (Query / Router / Form / @xstate/store / React primitives)
