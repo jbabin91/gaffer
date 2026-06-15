@@ -5,11 +5,14 @@ import {
   createRootRouteWithContext,
   HeadContent,
   Link,
+  Outlet,
   Scripts,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
+import { ThemeSwitcher } from '#/components/theme-switcher';
 import TanStackQueryDevtools from '#/integrations/tanstack-query/devtools';
+import { Providers } from '#/providers';
 import appCss from '#/styles/globals.css?url';
 
 type MyRouterContext = { queryClient: QueryClient };
@@ -24,7 +27,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       { title: 'FC 26 Career Hub' },
     ],
   }),
-  shellComponent: RootDocument,
+  shellComponent: RootComponent,
 });
 
 function RootError({ error }: { error: Error }) {
@@ -39,21 +42,32 @@ function RootError({ error }: { error: Error }) {
   );
 }
 
+function RootComponent() {
+  return (
+    <RootDocument>
+      <Outlet />
+    </RootDocument>
+  );
+}
+
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html suppressHydrationWarning lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
-        <header className="border-b">
-          <div className="mx-auto flex max-w-5xl items-center gap-2 px-4 py-3">
-            <Link className="font-display text-lg font-semibold" to="/">
-              FC 26 Career Hub
-            </Link>
-          </div>
-        </header>
-        {children}
+        <Providers>
+          <header className="border-b">
+            <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-4 py-3">
+              <Link className="font-display text-lg font-semibold" to="/">
+                FC 26 Career Hub
+              </Link>
+              <ThemeSwitcher />
+            </div>
+          </header>
+          {children}
+        </Providers>
         <TanStackDevtools
           config={{ position: 'bottom-right' }}
           plugins={[
