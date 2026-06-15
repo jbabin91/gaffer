@@ -438,7 +438,6 @@
     },
     {
       "files": [
-        "src/db/client.ts",
         "src/db/migrate.ts",
         "vite.config.ts",
         "**/*.stories.*",

@@ -2,6 +2,7 @@ import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 
 import { env } from '#/configs/env';
+import { logger } from '#/lib/logger';
 
 import * as schema from './schema';
 
@@ -36,8 +37,7 @@ export function getDb(): DB {
     // no listener Node treats it as unhandled and crashes the process. pg
     // discards the client and reconnects on the next query.
     pool.on('error', (error) => {
-      // No logger yet; surface idle-client errors rather than swallowing them.
-      console.error('[db] idle pool client error', error);
+      logger.error({ err: error }, 'idle pool client error');
     });
   }
   dbInstance ??= drizzle(pool, { casing: 'snake_case', schema });
