@@ -2,6 +2,8 @@
 
 Date: 2026-06-13
 Status: Accepted
+Updated: 2026-06-14; email verification + password reset in scope (not
+deferred); invites resolved to email-bound; transport: Cloudflare Email Service.
 
 > Implements the access model in `0009`. Background in
 > `research/0002-better-auth-invite-plugins.md`. The Better Auth 1.6
@@ -24,10 +26,27 @@ proven.
   max-uses, rate limits, email + OAuth).
 - **Roles: member and admin only.** No resource-level scopes — every user owns
   their own private data (`0009`), so there is nothing to share-scope.
-- **Invite delivery: email and manual-share** — the admin gets a code bound to a
-  specific email (see Verification) to send however they like; email delivery is
-  optional (no SMTP required). A small fork making the invite's email optional
-  would also allow open shareable links.
+- **Invites are email-bound** — the admin creates a code bound to a specific
+  address (see Verification); the gate enforces `invitation.email === signup
+email`. The email-optional fork (open shareable links) is **not** adopted: this
+  audience is a small, known group, leaks of an email-bound code are harmless, and
+  it keeps the plugin on its default path with no fork to maintain.
+- **Email verification and password reset are in scope**, not deferred — both run
+  through the same transport below.
+- **Email transport: Cloudflare Email Service** via Nodemailer over SMTP
+  (`smtp.mx.cloudflare.net:465`, implicit TLS, auth user `api_token` + an API
+  token in `CF_EMAIL_TOKEN`). React Email renders templates. SMTP2GO is the
+  one-env-var fallback if Cloudflare's beta regresses. Chosen over SES (no AWS,
+  free tier spent), Resend (free plan caps at one domain, already used), and
+  direct-MTA relays (AT&T blocks outbound port 25 — verified). Live SMTP test to
+  the real domain succeeded end-to-end.
+  - `CF_EMAIL_TOKEN` is an **optional** server env var. Transport selection
+    branches on it: unset → a dev "log" transport prints the verification/reset
+    link to the terminal (no SMTP secret needed, works offline) — but the link
+    itself carries a one-time bearer token, so the log transport is local-dev
+    only and must never reach shared/prod logs; set → real Cloudflare send.
+    Prod token is a Coolify secret; a separate dev token lives in local `.env` /
+    `.env.local` (both gitignored) for opt-in live testing.
 
 ## Alternatives considered
 
@@ -47,9 +66,10 @@ proven.
   our container (it is per-process and lost on restart); the plugin's `isAdmin`
   check relies on a `role` field, so we either run Better Auth's admin plugin or
   pass a custom `isAdmin`.
-- Follow-ups: provide a DB-backed `inviteStore`; choose adopt-as-is vs the
-  email-optional fork based on whether open shareable links are wanted; design
-  the invite-creation UX around email-bound codes (below).
+- Follow-ups: provide a DB-backed `inviteStore`; design the invite-creation UX
+  around email-bound codes (below); implement the email-verification and
+  password-reset flows (React Email templates + `CF_EMAIL_TOKEN`-branched
+  transport selection) and wire their `sendEmail` callbacks to the transport.
 
 ## Verification
 
@@ -67,7 +87,8 @@ Build implications:
 
 - **Invites are email-bound.** The gate enforces `invitation.email === signup
 email` (else `EMAIL_MISMATCH`), so the admin creates an invite _for a specific
-  address_; a generic shareable link needs the email-optional fork.
+  address_; a generic shareable link would need the email-optional fork, which we
+  are not adopting (see Decision).
 - **Bootstrapping the first admin** needs the gate off for that one sign-up —
   `enabled` accepts a function for runtime toggling.
 - The invite code is read from `body.inviteCode` on email sign-up; codes are
