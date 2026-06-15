@@ -1,8 +1,9 @@
 # Architecture
 
 A companion for EA Sports FC 26 manager career mode, backed by a hosted Postgres
-behind TanStack Start server functions. Single-user for now; accounts and invites
-land in a later phase (see `docs/specs/0001`).
+behind TanStack Start server functions. Multi-user auth is landing in phases
+(see `docs/specs/0001`): Better Auth core (email/password + admin) has landed;
+user-scoped data and invite gating are still in progress.
 
 ## Shape
 

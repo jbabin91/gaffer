@@ -35,7 +35,7 @@
         "react-aria-components",
         "tailwindcss-react-aria-components",
         "drizzle-orm",
-        "@electric-sql/pglite"
+        "pg"
       ],
       "automerge": false
     },

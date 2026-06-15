@@ -20,9 +20,10 @@ Tests use a real Postgres container, not `getDb()` — see `docs/development/tes
 - Schema lives in `src/db/schema.ts` (tables, relations, inferred types).
 - Drizzle uses `casing: 'snake_case'`, so camelCase columns map to snake_case
   without per-column names.
-- Migrations are SQL files under `src/db/migrations/`, applied by the
-  node-postgres drizzle migrator (`src/db/migrate.ts`).
-- `pnpm db:generate` after a schema change; `pnpm db:migrate` to apply.
+- Migrations are SQL files under `src/db/migrations/`. `pnpm db:generate`
+  writes one after a schema change; `pnpm db:migrate` (drizzle-kit) applies them.
+- `src/db/migrate.ts` (`runMigrations`) is the programmatic migrator used by the
+  integration-test harness.
 
 ## Conventions
 

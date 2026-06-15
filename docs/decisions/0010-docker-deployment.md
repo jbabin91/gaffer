@@ -3,13 +3,13 @@
 Date: 2026-06-13
 Status: Proposed
 
-> Part of the self-hosted pivot (`0009`); implemented in `specs/0001`.
+> Part of the self-hosted pivot (`0009`); specified in `specs/0001`.
 
 ## Context
 
 Self-hostable software needs one portable deployment artifact that works across
-hosts (Coolify, plain Docker, Portainer, k8s, Fly) without tying anyone to a
-specific platform.
+hosts (plain Docker, Portainer, k8s, Fly, a self-hosting PaaS) without tying
+anyone to a specific platform.
 
 ## Decision
 
@@ -24,18 +24,17 @@ Ship a **Docker image + `docker-compose.yml`** as the canonical deployment:
 - Publish versioned images to **GHCR** (`ghcr.io/oakoss/gaffer:<version>`) via
   CI. Never ship a default `BETTER_AUTH_SECRET` — require it, or generate per
   instance.
-- Coolify + Cloudflare Tunnel is the author's chosen host: one consumer of the
-  Docker artifact, not a requirement.
+- A self-hosting PaaS + Cloudflare Tunnel is the author's chosen host: one
+  consumer of the Docker artifact, not a requirement.
 
 ## Alternatives considered
 
-- A Coolify-specific deployment (as in the finance-tracker ADR) — ties
-  self-hosters to one platform.
+- A PaaS-specific deployment — ties self-hosters to one platform.
 - Build-pack / Nixpacks only — less portable than a published image + compose.
 
 ## Consequences
 
-- Positive: one artifact runs everywhere; Coolify just consumes it; upgrades are
+- Positive: one artifact runs everywhere; the host just consumes it; upgrades are
   an image pull.
 - Negative: a new `.env.example` (the browser-only app had none); CI must build
   and publish the image; migrations must be forward-only and upgrade-safe, since

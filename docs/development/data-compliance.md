@@ -1,7 +1,7 @@
 # Data compliance
 
-This app is **not affiliated with or endorsed by EA Sports.** It is a personal,
-local-first companion for tracking your own career-mode saves.
+This app is **not affiliated with or endorsed by EA Sports.** It is a self-hosted
+companion for tracking your own EA Sports FC 26 career-mode saves.
 
 ## The catalog rule
 

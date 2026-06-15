@@ -7,8 +7,8 @@ Documentation for the FC 26 career companion, organized by area.
 Evergreen guides for working in this codebase.
 
 - `docs/CONTRIBUTING.md` — setup, scripts, and the green gate
-- `docs/development/architecture.md` — local-first design and feature modules
-- `docs/development/database.md` — PGlite + Drizzle, migrations, the snapshot model
+- `docs/development/architecture.md` — server data layer and feature modules
+- `docs/development/database.md` — Postgres + Drizzle, migrations, the snapshot model
 - `docs/development/testing.md` — Vitest unit/integration split and the hook harness
 - `docs/development/routing.md` — TanStack Router file-based routes
 - `docs/development/styling.md` — Intent UI, React Aria, and Tailwind v4

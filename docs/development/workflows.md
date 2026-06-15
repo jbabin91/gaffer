@@ -31,5 +31,5 @@ not enforced by the repo itself.
 
 Renovate (`.github/renovate.json`) opens grouped `chore(deps)` PRs: the React,
 TanStack, Tailwind, and oxlint families are grouped; the data and UI core
-(`drizzle-orm`, `@electric-sql/pglite`, `react-aria-components`) are not
-auto-merged. Renovate's mise manager keeps the `mise.toml` pins current.
+(`drizzle-orm`, `pg`, `react-aria-components`) are not auto-merged. Renovate's
+mise manager keeps the `mise.toml` pins current.

@@ -21,7 +21,7 @@ Use `docs/decisions/0000-template.md`.
 ## Index
 
 - `0001-tanstack-start.md` — TanStack Start as the app framework
-- `0002-pglite-drizzle-local-first.md` — PGlite + Drizzle as the local-first data layer
+- `0002-pglite-drizzle-local-first.md` — PGlite + Drizzle as the local-first data layer (Superseded by 0009)
 - `0003-intent-ui-react-aria.md` — Intent UI on React Aria + Tailwind v4
 - `0004-oxlint-oxfmt.md` — oxlint + oxfmt as the lint/format toolchain
 - `0005-repository-sync-seam.md` — repository functions as the future sync seam
@@ -32,5 +32,5 @@ Use `docs/decisions/0000-template.md`.
 - `0010-docker-deployment.md` — Docker image + compose as the canonical deploy (Proposed)
 - `0011-license-and-naming.md` — MIT license, named Gaffer (Proposed)
 - `0012-data-acquisition.md` — ship the importer, not the data (Proposed)
-- `0013-auth-and-invites.md` — Better Auth + invite-only registration
-- `0014-state-management.md` — layered state model (Query / Router / Form / @xstate/store / React primitives)
+- `0013-auth-and-invites.md` — Better Auth + invite-only registration (Accepted)
+- `0014-state-management.md` — layered state model (Query / Router / Form / @xstate/store / React primitives) (Accepted)

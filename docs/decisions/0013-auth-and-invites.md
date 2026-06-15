@@ -9,18 +9,21 @@ deferred); invites resolved to email-bound; transport: Cloudflare Email Service.
 > `research/0002-better-auth-invite-plugins.md`. The Better Auth 1.6
 > compatibility check passed (see Verification).
 
+**Implementation status (2026-06-15):** Better Auth core (email/password +
+admin) and the email transport have landed. The invite gate
+(`better-auth-invitation-only`), the verification/reset flows, and React Email
+templates are decided here but not yet wired.
+
 ## Context
 
 Self-hosted instances need accounts with closed, invite-only registration: the
-first user is admin and invites close friends; nobody else can register. The
-finance-tracker already runs Better Auth on TanStack Start, so the base is
-proven.
+first user is admin and invites close friends; nobody else can register. Better
+Auth on TanStack Start is already a proven pairing, so the base is solid.
 
 ## Decision
 
 - **Better Auth** (email/password) on TanStack Start, mounted via a catch-all
-  auth route (the finance-tracker pattern), with the admin plugin for admin
-  users.
+  auth route, with the admin plugin for admin users.
 - **Invite gate via `better-auth-invitation-only`** — a `before`-sign-up hook
   that rejects sign-ups without a valid invite code (hashed codes, expiry,
   max-uses, rate limits, email + OAuth).
@@ -46,8 +49,8 @@ email`. The email-optional fork (open shareable links) is **not** adopted: this
     link to the terminal (no SMTP secret needed, works offline) — but the link
     itself carries a one-time bearer token, so the log transport is local-dev
     only and must never reach shared/prod logs; set → real Cloudflare send.
-    Prod token is a Coolify secret; a separate dev token lives in local `.env` /
-    `.env.local` (both gitignored) for opt-in live testing.
+    Prod token is a deploy-platform secret; a separate dev token lives in
+    local `.env` / `.env.local` (both gitignored) for opt-in live testing.
 
 ## Alternatives considered
 
