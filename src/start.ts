@@ -4,23 +4,29 @@ import {
   createStart,
 } from '@tanstack/react-start';
 
-import { handleRequestError } from '#/lib/handle-request-error';
+import type { RequestLogBase } from '#/lib/request-log';
 
-const errorLogger = createMiddleware({ type: 'request' }).server(
+const requestLogger = createMiddleware({ type: 'request' }).server(
   async ({ handlerType, next, pathname, request, serverFnMeta }) => {
-    try {
-      return await next();
-    } catch (error) {
-      // Dynamic import: pino is server-only; this file is client-shared, so
-      // eager evaluation would run server logging code in the browser.
-      const { logger } = await import('#/lib/logger');
-      handleRequestError(logger, error, {
-        fn: serverFnMeta?.name,
-        handlerType,
-        method: request.method,
-        pathname,
-      });
-    }
+    // pino + node:async_hooks are server-only; dynamic import keeps them out of
+    // the client bundle since this file is evaluated in both environments.
+    const { logger } = await import('#/lib/logger');
+    const { runInstrumented } = await import('#/lib/request-log');
+    const { makeRequestId, runWithRequestContext } =
+      await import('#/lib/request-context');
+
+    const log = logger.child({ reqId: makeRequestId(request) });
+    const fields: Record<string, unknown> = {};
+    const base: RequestLogBase = {
+      fn: serverFnMeta?.name,
+      handlerType,
+      method: request.method,
+      pathname,
+    };
+
+    return runWithRequestContext({ fields, log }, () =>
+      runInstrumented(log, base, fields, next),
+    );
   },
 );
 
@@ -31,5 +37,5 @@ const csrf = createCsrfMiddleware({
 });
 
 export const startInstance = createStart(() => ({
-  requestMiddleware: [errorLogger, csrf],
+  requestMiddleware: [requestLogger, csrf],
 }));
