@@ -147,5 +147,10 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 
 When a commit is authorized and it completes a bead, do the bead bookkeeping
 **before** staging: close the finished bead and file any follow-up beads, then
-`git add` / `git commit`. The beads export (`.beads/issues.jsonl`) rides in the
-same commit rather than a trailing "chore: close bead" commit.
+`git add` / `git commit`. The bead changes ride in the same commit rather than a
+trailing "chore: close bead" commit.
+
+`bd close` / `bd create` write **two** tracked exports — `.beads/issues.jsonl`
+(issue state) and `.beads/interactions.jsonl` (the append-only change log). Stage
+**both** (`git add .beads/`); staging only `issues.jsonl` strands the interaction
+log and forces a follow-up amend.
