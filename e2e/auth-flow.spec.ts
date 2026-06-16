@@ -6,7 +6,6 @@ const NEW_PASSWORD = 'e2e-password-2';
 
 test('signs up, signs out, and signs back in through the forms', async ({
   authPage,
-  context,
   page,
   squadPage,
 }) => {
@@ -14,8 +13,11 @@ test('signs up, signs out, and signs back in through the forms', async ({
   await expect(page).toHaveURL(GATED_URL);
   await expect(squadPage.createButton).toBeVisible();
 
-  // No logout UI yet (gf-kdr); dropping the cookie simulates signing out.
-  await context.clearCookies();
+  await page.getByRole('button', { name: 'Sign out' }).click();
+  await expect(page).toHaveURL(/\/login/);
+  // The control is gated to the _app subtree, so it's absent on /login.
+  await expect(page.getByRole('button', { name: 'Sign out' })).toBeHidden();
+
   await page.goto('/');
   await expect(page).toHaveURL(/\/login/);
 
