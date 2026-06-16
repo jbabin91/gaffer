@@ -84,6 +84,18 @@ invariant, footgun, side effect, non-obvious return, or an error worth
 to echo a name or type. No JSDoc on components, thin wrappers, schemas, or
 anything the signature already answers.
 
+## Module conventions
+
+No barrel files — no `index.ts`/`index.tsx` whose only job is to re-export
+symbols defined elsewhere (`export { X } from './x'`). Import from the concrete
+module instead (`#/components/forms/form`, not `#/components/forms`). This is an
+app, not a published library, so a re-export barrel adds no API-surface value and
+brings circular-import risk and weaker tree-shaking.
+
+An `index` file that _defines_ its own module is fine — e.g.
+`src/providers/index.tsx` declares the `Providers` component inline. The ban is
+the re-export aggregator, not the filename.
+
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:6cd5cc61 -->
 
 ## Beads Issue Tracker

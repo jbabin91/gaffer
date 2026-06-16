@@ -27,6 +27,8 @@ todos.json
 .claude/.review-mark
 .claude/.no-review-gate
 
+.claude/plans/
+
 # Beads / Dolt files (added by bd init)
 .dolt/
 *.db
