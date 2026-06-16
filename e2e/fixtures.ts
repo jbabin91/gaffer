@@ -1,5 +1,6 @@
 import { test as base } from '@playwright/test';
 
+import { AuthPage } from './pages/auth.page';
 import { SquadPage } from './pages/squad.page';
 import { resetE2eDb } from './support/db';
 
@@ -12,16 +13,18 @@ export const FIRST_MANAGER = {
 };
 
 type Fixtures = {
-  // auto: true — every test gets a clean database without opting in.
+  authPage: AuthPage;
   resetDb: void;
-  // Signs up the first user (no invite needed) so gated routes are reachable.
-  // page.request shares the browser cookie jar, so the page is authenticated
-  // without driving the sign-up form (which native-submits before hydration).
+  // Authenticates via page.request (shared cookie jar), not the sign-up form
+  // that native-submits before hydration. The first user needs no invite.
   signUpFirstManager: () => Promise<void>;
   squadPage: SquadPage;
 };
 
 export const test = base.extend<Fixtures>({
+  authPage: async ({ page }, use) => {
+    await use(new AuthPage(page));
+  },
   resetDb: [
     async ({}, use) => {
       await resetE2eDb();

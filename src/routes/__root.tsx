@@ -7,6 +7,7 @@ import {
   Link,
   Outlet,
   Scripts,
+  useHydrated,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
@@ -51,8 +52,16 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  // [data-hydrated] signals e2e that forms are safe to drive; useHydrated
+  // (useSyncExternalStore) sets it after hydration without an SSR mismatch.
+  const hydrated = useHydrated();
+
   return (
-    <html suppressHydrationWarning lang="en">
+    <html
+      suppressHydrationWarning
+      data-hydrated={hydrated || undefined}
+      lang="en"
+    >
       <head>
         <HeadContent />
       </head>

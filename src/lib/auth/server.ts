@@ -92,8 +92,8 @@ export function createAuth(db: Database) {
       tanstackStartCookies(),
     ],
     secret: env.BETTER_AUTH_SECRET,
-    // Skips a getSession DB round-trip while the cookie is warm.
-    session: { cookieCache: { enabled: true, maxAge: 5 * 60 } },
+    // cookieCache off: a revoked session (revokeSessionsOnPasswordReset) must
+    // miss immediately; a warm signed cookie would linger until its maxAge.
   });
 }
 

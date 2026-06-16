@@ -1,4 +1,4 @@
-import { count, sql } from 'drizzle-orm';
+import { count, desc, like, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 
@@ -37,4 +37,17 @@ export async function resetE2eDb(): Promise<void> {
 export async function countCareers(): Promise<number> {
   const [row] = await getDb().select({ value: count() }).from(schema.careers);
   return row?.value ?? 0;
+}
+
+// Better Auth stores the token as `reset-password:<token>` in verification.identifier.
+export async function latestResetToken(): Promise<string> {
+  const prefix = 'reset-password:';
+  const [row] = await getDb()
+    .select({ identifier: schema.verification.identifier })
+    .from(schema.verification)
+    .where(like(schema.verification.identifier, `${prefix}%`))
+    .orderBy(desc(schema.verification.createdAt))
+    .limit(1);
+  if (!row) throw new Error('no reset token in the e2e database');
+  return row.identifier.slice(prefix.length);
 }
