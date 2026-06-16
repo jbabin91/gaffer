@@ -23,22 +23,24 @@ import {
 
 const dbRef = vi.hoisted(() => ({ current: null as DB | null }));
 
-// Route the server-function api module to the services against the test db.
+function testDb(): DB {
+  if (!dbRef.current) throw new Error('test db not initialized');
+  return dbRef.current;
+}
+
 vi.mock('#/modules/player/api/players', async () => {
   const svc = await import('#/modules/player/services/players');
   return {
     addPlayerFn: ({ data }: { data: AddPlayerArgs }) =>
-      svc.addPlayer(dbRef.current!, data.careerId, data.input),
-    getPlayerFn: ({ data }: { data: string }) =>
-      svc.getPlayer(dbRef.current!, data),
+      svc.addPlayer(testDb(), data.careerId, data.input),
+    getPlayerFn: ({ data }: { data: string }) => svc.getPlayer(testDb(), data),
     getPlayerSnapshotsFn: ({ data }: { data: string }) =>
-      svc.getPlayerSnapshots(dbRef.current!, data),
-    listSquadFn: ({ data }: { data: string }) =>
-      svc.listSquad(dbRef.current!, data),
+      svc.getPlayerSnapshots(testDb(), data),
+    listSquadFn: ({ data }: { data: string }) => svc.listSquad(testDb(), data),
     recordSnapshotFn: ({ data }: { data: RecordSnapshotArgs }) =>
-      svc.recordSnapshot(dbRef.current!, data.playerId, data.input),
+      svc.recordSnapshot(testDb(), data.playerId, data.input),
     removePlayerFn: ({ data }: { data: string }) =>
-      svc.removePlayer(dbRef.current!, data),
+      svc.removePlayer(testDb(), data),
   };
 });
 

@@ -11,13 +11,17 @@ import { useCareers, useCreateCareer } from './use-careers';
 
 const dbRef = vi.hoisted(() => ({ current: null as DB | null }));
 
-// Route the server-function api module to the services against the test db.
+function testDb(): DB {
+  if (!dbRef.current) throw new Error('test db not initialized');
+  return dbRef.current;
+}
+
 vi.mock('#/modules/career/api/careers', async () => {
   const svc = await import('#/modules/career/services/careers');
   return {
     createCareerFn: ({ data }: { data: CreateCareerInput }) =>
-      svc.createCareer(dbRef.current!, data),
-    listCareersFn: () => svc.listCareers(dbRef.current!),
+      svc.createCareer(testDb(), data),
+    listCareersFn: () => svc.listCareers(testDb()),
   };
 });
 

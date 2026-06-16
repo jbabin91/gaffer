@@ -12,10 +12,14 @@ import { useActiveCareer } from './use-active-career';
 const STORAGE_KEY = 'fc:activeCareerId';
 const dbRef = vi.hoisted(() => ({ current: null as DB | null }));
 
-// Route the server-function api module to the service against the test db.
+function testDb(): DB {
+  if (!dbRef.current) throw new Error('test db not initialized');
+  return dbRef.current;
+}
+
 vi.mock('#/modules/career/api/careers', async () => {
   const svc = await import('#/modules/career/services/careers');
-  return { listCareersFn: () => svc.listCareers(dbRef.current!) };
+  return { listCareersFn: () => svc.listCareers(testDb()) };
 });
 
 let db: DB;

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
 import { z } from 'zod';
 
 import { useAppForm } from '#/components/forms/form';
@@ -14,17 +14,21 @@ import { loginSchema, sanitizeRedirect } from '#/lib/auth/schemas';
 
 export const Route = createFileRoute('/_auth/login')({
   component: LoginPage,
-  // Sanitized at navigation time via sanitizeRedirect.
   validateSearch: z.object({ redirect: z.string().optional() }),
 });
 
 function LoginPage() {
+  const router = useRouter();
   const navigate = Route.useNavigate();
   const { redirect } = Route.useSearch();
 
   const form = useAppForm({
     defaultValues: { email: '', password: '' },
-    onSubmit: () => navigate({ to: sanitizeRedirect(redirect) }),
+    onSubmit: async () => {
+      // Re-run the _app guard with the now-authenticated session before landing.
+      await router.invalidate();
+      await navigate({ to: sanitizeRedirect(redirect) });
+    },
     validators: {
       onChange: loginSchema,
       onSubmitAsync: async ({ value }) => {

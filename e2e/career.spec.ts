@@ -6,7 +6,8 @@ const CAREER_NAME = 'E2E Rebuild';
 test(
   'creates a career and persists it across a reload',
   { tag: ['@smoke'] },
-  async ({ page, squadPage }) => {
+  async ({ page, signUpFirstManager, squadPage }) => {
+    await signUpFirstManager();
     await squadPage.goto();
     await squadPage.createCareer(CAREER_NAME);
 

@@ -16,7 +16,13 @@ export default defineConfig({
   // reusing a stray server could silently point the app at the dev database.
   webServer: {
     command: 'pnpm dev',
-    env: { DATABASE_URL: E2E_DATABASE_URL, PORT: String(E2E_PORT) },
+    // BETTER_AUTH_URL must match the e2e port; it seeds better-auth's baseURL
+    // and trustedOrigins, so auth calls on :3100 are rejected at the dev value (:3000).
+    env: {
+      BETTER_AUTH_URL: E2E_BASE_URL,
+      DATABASE_URL: E2E_DATABASE_URL,
+      PORT: String(E2E_PORT),
+    },
     reuseExistingServer: false,
     timeout: 120_000,
     url: E2E_BASE_URL,
