@@ -1,33 +1,40 @@
+import { count, sql } from 'drizzle-orm';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
+
+import * as schema from '#/db/schema';
 
 import { E2E_DATABASE_URL } from './env';
 
-let pool: Pool | undefined;
-
-function getPool(): Pool {
-  pool ??= new Pool({
+function makeDb() {
+  const pool = new Pool({
     allowExitOnIdle: true,
     connectionString: E2E_DATABASE_URL,
   });
-  return pool;
+  return drizzle(pool, { casing: 'snake_case', schema });
 }
 
-// Tables are read from the live schema so the reset stays current as tables are added.
-// The drizzle journal lives in its own schema and is left untouched.
+let db: ReturnType<typeof makeDb> | undefined;
+
+function getDb() {
+  db ??= makeDb();
+  return db;
+}
+
+// TRUNCATE and pg_tables have no drizzle query-builder equivalent, so they run as
+// raw SQL through drizzle's executor. Tables are read from the live catalog so the
+// reset stays current as tables are added; the drizzle journal sits in its own schema.
 export async function resetE2eDb(): Promise<void> {
-  const db = getPool();
-  const { rows } = await db.query<{ name: string }>(
-    `SELECT tablename AS name FROM pg_tables WHERE schemaname = 'public'`,
+  const { rows } = await getDb().execute<{ name: string }>(
+    sql`SELECT tablename AS name FROM pg_tables WHERE schemaname = 'public'`,
   );
   if (rows.length === 0) return;
   const tables = rows.map((row) => `"${row.name}"`).join(', ');
-  await db.query(`TRUNCATE ${tables} RESTART IDENTITY CASCADE`);
+  await getDb().execute(sql.raw(`TRUNCATE ${tables} RESTART IDENTITY CASCADE`));
 }
 
 /** Row count straight from the e2e database, to assert the app wrote there. */
 export async function countCareers(): Promise<number> {
-  const { rows } = await getPool().query<{ count: number }>(
-    `SELECT count(*)::int AS count FROM careers`,
-  );
-  return rows[0]?.count ?? 0;
+  const [row] = await getDb().select({ value: count() }).from(schema.careers);
+  return row?.value ?? 0;
 }

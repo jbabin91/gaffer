@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { loginSchema, sanitizeRedirect, signUpSchema } from './schemas';
+import {
+  forgotPasswordSchema,
+  loginSchema,
+  resetPasswordSchema,
+  sanitizeRedirect,
+  signUpSchema,
+} from './schemas';
 
 describe('sanitizeRedirect', () => {
   it('keeps a same-site path', () => {
@@ -66,6 +72,59 @@ describe('auth schemas', () => {
     expect(
       loginSchema.safeParse({ email: 'boss@example.com', password: '' })
         .success,
+    ).toBe(false);
+  });
+
+  it('rejects an over-long email and password', () => {
+    const longEmail = `${'a'.repeat(250)}@example.com`;
+    expect(
+      loginSchema.safeParse({ email: longEmail, password: 'x' }).success,
+    ).toBe(false);
+    expect(
+      signUpSchema.safeParse({
+        email: 'boss@example.com',
+        inviteCode: '',
+        name: 'Manager',
+        password: 'a'.repeat(129),
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects an over-long invite code and name on sign-up', () => {
+    const base = {
+      email: 'boss@example.com',
+      name: 'Manager',
+      password: 'longenough',
+    };
+    expect(
+      signUpSchema.safeParse({ ...base, inviteCode: 'a'.repeat(129) }).success,
+    ).toBe(false);
+    expect(
+      signUpSchema.safeParse({ ...base, inviteCode: '', name: 'a'.repeat(101) })
+        .success,
+    ).toBe(false);
+  });
+});
+
+describe('recovery schemas', () => {
+  it('validates a forgot-password email', () => {
+    expect(
+      forgotPasswordSchema.safeParse({ email: 'boss@example.com' }).success,
+    ).toBe(true);
+    expect(forgotPasswordSchema.safeParse({ email: 'nope' }).success).toBe(
+      false,
+    );
+  });
+
+  it('enforces the password length bounds on reset', () => {
+    expect(resetPasswordSchema.safeParse({ password: 'short' }).success).toBe(
+      false,
+    );
+    expect(
+      resetPasswordSchema.safeParse({ password: 'longenough' }).success,
+    ).toBe(true);
+    expect(
+      resetPasswordSchema.safeParse({ password: 'a'.repeat(129) }).success,
     ).toBe(false);
   });
 });

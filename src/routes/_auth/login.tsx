@@ -9,11 +9,12 @@ import {
   CardHeader,
 } from '#/components/ui/card';
 import { authClient } from '#/lib/auth/client';
+import { NETWORK_ERROR_MESSAGE, RATE_LIMITED_MESSAGE } from '#/lib/auth/errors';
 import { loginSchema, sanitizeRedirect } from '#/lib/auth/schemas';
 
 export const Route = createFileRoute('/_auth/login')({
   component: LoginPage,
-  // Optional so /login links need no search prop; sanitized at navigation time.
+  // Sanitized at navigation time via sanitizeRedirect.
   validateSearch: z.object({ redirect: z.string().optional() }),
 });
 
@@ -33,14 +34,10 @@ function LoginPage() {
             password: value.password,
           });
           if (!error) return null;
-          if (error.status === 429) {
-            return { form: 'Too many attempts. Wait a moment and try again.' };
-          }
+          if (error.status === 429) return { form: RATE_LIMITED_MESSAGE };
           return { form: 'Invalid email or password.' };
         } catch {
-          return {
-            form: 'Could not reach the server. Check your connection and try again.',
-          };
+          return { form: NETWORK_ERROR_MESSAGE };
         }
       },
     },
@@ -53,6 +50,7 @@ function LoginPage() {
         title="Welcome back"
       />
       <form
+        method="post"
         onSubmit={(event) => {
           event.preventDefault();
           void form.handleSubmit();
@@ -85,6 +83,14 @@ function LoginPage() {
           <form.AppForm>
             <form.SubmitButton>Sign in</form.SubmitButton>
           </form.AppForm>
+          <p className="text-center text-sm text-muted-fg">
+            <Link
+              className="text-primary hover:underline"
+              to="/forgot-password"
+            >
+              Forgot your password?
+            </Link>
+          </p>
           <p className="text-center text-sm text-muted-fg">
             Need an account?{' '}
             <Link className="text-primary hover:underline" to="/sign-up">

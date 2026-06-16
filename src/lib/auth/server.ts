@@ -57,6 +57,9 @@ export function createAuth(db: Database) {
     },
     emailAndPassword: {
       enabled: true,
+      // Kill existing sessions when a password is reset, so a reset prompted by a
+      // compromise also evicts the attacker.
+      revokeSessionsOnPasswordReset: true,
       sendResetPassword: async ({ token, user: recipient }) => {
         // Email an app reset link, not Better Auth's `url`: that callback 400s
         // without a client-supplied `callbackURL`. The reset page reads `?token`

@@ -8,6 +8,7 @@ import {
   CardHeader,
 } from '#/components/ui/card';
 import { signUpWithInvite } from '#/lib/auth/client';
+import { NETWORK_ERROR_MESSAGE, signUpFormError } from '#/lib/auth/errors';
 import { signUpSchema } from '#/lib/auth/schemas';
 
 export const Route = createFileRoute('/_auth/sign-up')({
@@ -30,35 +31,9 @@ function SignUpPage() {
             name: value.name,
             password: value.password,
           });
-
-          if (!error) return null;
-
-          switch (error.code) {
-            case 'EMAIL_MISMATCH': {
-              return {
-                fields: {
-                  email: error.message ?? 'Email does not match the invite.',
-                },
-              };
-            }
-            case 'INVALID_INVITE':
-            case 'INVITE_REQUIRED': {
-              return {
-                fields: {
-                  inviteCode: error.message ?? 'This invite code is not valid.',
-                },
-              };
-            }
-            default: {
-              return {
-                form: error.message ?? 'Could not create your account.',
-              };
-            }
-          }
+          return error ? signUpFormError(error.code) : null;
         } catch {
-          return {
-            form: 'Could not reach the server. Check your connection and try again.',
-          };
+          return { form: NETWORK_ERROR_MESSAGE };
         }
       },
     },
@@ -71,6 +46,7 @@ function SignUpPage() {
         title="Create your account"
       />
       <form
+        method="post"
         onSubmit={(event) => {
           event.preventDefault();
           void form.handleSubmit();
