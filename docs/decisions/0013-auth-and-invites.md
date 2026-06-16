@@ -10,9 +10,10 @@ deferred); invites resolved to email-bound; transport: Cloudflare Email Service.
 > compatibility check passed (see Verification).
 
 **Implementation status (2026-06-15):** Better Auth core (email/password +
-admin) and the email transport have landed. The invite gate
-(`better-auth-invitation-only`), the verification/reset flows, and React Email
-templates are decided here but not yet wired.
+admin), the email transport, and the invite gate (`better-auth-invitation-only`
+with a DB-backed store and first-user-admin bootstrap) have landed. The
+verification/reset flows and React Email templates are decided here but not yet
+wired.
 
 ## Context
 

@@ -1,4 +1,3 @@
-// Keeps nodemailer out of the client bundle.
 import '@tanstack/react-start/server-only';
 
 import { createTransport, type Transporter } from 'nodemailer';

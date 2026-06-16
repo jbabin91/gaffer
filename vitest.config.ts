@@ -36,6 +36,9 @@ export default defineConfig({
           globalSetup: ['./test/global-setup.ts'],
           include: ['**/*.integration.{ts,tsx}'],
           name: 'integration',
+          // Some integration tests import the auth instance, which validates env
+          // at import; seed valid placeholders before modules load.
+          setupFiles: ['./test/setup-env.ts'],
         },
       },
     ],

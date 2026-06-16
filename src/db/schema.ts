@@ -209,6 +209,47 @@ export const verification = pgTable(
   (t) => [index('verification_identifier_idx').on(t.identifier)],
 );
 
+// Codes stored as SHA-256 hashes; shape mirrors better-auth-invitation-only's declared schema.
+export const invitation = pgTable(
+  'invitation',
+  {
+    codeHash: text().notNull().unique(),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    email: text().notNull(),
+    expiresAt: timestamp({ withTimezone: true }).notNull(),
+    id: text().primaryKey(),
+    invitedBy: text()
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    maxUses: integer().notNull().default(1),
+    metadata: text(),
+    revokedAt: timestamp({ withTimezone: true }),
+    useCount: integer().notNull().default(0),
+    usedAt: timestamp({ withTimezone: true }),
+    // Set-null on user delete: usedBy can be null while usedAt is set, so a null
+    // usedBy doesn't mean unused.
+    usedBy: text().references(() => user.id, { onDelete: 'set null' }),
+  },
+  (t) => [
+    index('invitation_email_idx').on(t.email),
+    index('invitation_expires_at_idx').on(t.expiresAt),
+    index('invitation_created_at_idx').on(t.createdAt),
+  ],
+);
+
+// Pending validate→signup bridge entries (5-min TTL). `key` is a SHA-256 hash of
+// the plugin's pending-entry key (signup email, or the raw code on OAuth), so no
+// bearer code or email is stored in plaintext.
+export const invitePending = pgTable('invite_pending', {
+  // No defaultNow(): createInviteStore is the sole writer and stores the plugin's
+  // entry timestamp (what the TTL sweep keys on), not insert time.
+  createdAt: timestamp({ withTimezone: true }).notNull(),
+  invitationId: text()
+    .notNull()
+    .references(() => invitation.id, { onDelete: 'cascade' }),
+  key: text().primaryKey(),
+});
+
 export const careersRelations = relations(careers, ({ many }) => ({
   players: many(players),
   seasons: many(seasons),
