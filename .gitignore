@@ -9,6 +9,7 @@ dist-ssr
 .wrangler
 .output
 .vinxi
+.react-email
 __unconfig*
 todos.json
 .playwright-mcp

@@ -10,10 +10,15 @@ deferred); invites resolved to email-bound; transport: Cloudflare Email Service.
 > compatibility check passed (see Verification).
 
 **Implementation status (2026-06-15):** Better Auth core (email/password +
-admin), the email transport, and the invite gate (`better-auth-invitation-only`
-with a DB-backed store and first-user-admin bootstrap) have landed. The
-verification/reset flows and React Email templates are decided here but not yet
-wired.
+admin), the email transport, the invite gate (`better-auth-invitation-only`
+with a DB-backed store and first-user-admin bootstrap), and the email
+verification + password-reset flows (React Email templates rendered through the
+transport, with `sendOnSignUp` verification and a `pnpm email:dev` preview) have
+all landed. Email verification is sent but not yet _required_ to sign in
+(`requireEmailVerification` left off so the bootstrap admin isn't locked out).
+Password-reset emails link to an app `/reset-password?token=` page (consumed by
+the auth-UI work) rather than Better Auth's callback URL, which 400s without a
+client `redirectTo`.
 
 ## Context
 

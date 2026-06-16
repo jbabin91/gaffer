@@ -21,20 +21,37 @@ export type EmailMessage = {
 
 let cached: { from: string; transporter: Transporter } | undefined;
 
-/**
- * Sends a transactional email via the env-selected transport. With no SMTP
- * transport configured (dev), it logs the message and `url` instead of sending.
- *
- * @throws if production has no transport configured, or if an SMTP transport is
- * set without EMAIL_FROM.
- */
-export async function sendEmail(message: EmailMessage): Promise<void> {
-  const plan = planEmailTransport({
+const planFromEnv = () =>
+  planEmailTransport({
     cfEmailToken: env.CF_EMAIL_TOKEN,
     emailFrom: env.EMAIL_FROM,
     isProd: import.meta.env.PROD,
     smtpUrl: env.SMTP_URL,
   });
+
+/**
+ * Called at auth startup: Better Auth runs its email callbacks through a handler
+ * that swallows rejections, so a per-send throw never reaches the response —
+ * without this, a prod deploy missing a transport would return 200 from
+ * signup/reset while sending nothing. Failing here makes that misconfiguration
+ * crash on boot.
+ *
+ * @throws if production has no transport configured, or an SMTP transport is set
+ * without EMAIL_FROM.
+ */
+export function assertEmailTransportConfigured(): void {
+  planFromEnv();
+}
+
+/**
+ * With no SMTP transport configured (dev), logs the message and `url` instead
+ * of sending.
+ *
+ * @throws if production has no transport configured, or if an SMTP transport is
+ * set without EMAIL_FROM.
+ */
+export async function sendEmail(message: EmailMessage): Promise<void> {
+  const plan = planFromEnv();
 
   if (plan.kind === 'log') {
     logger.info(

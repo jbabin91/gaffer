@@ -23,6 +23,7 @@ Full setup, scripts, and conventions: [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING
 
 ```bash
 pnpm dev             # vite dev server on :3000
+pnpm email:dev       # react-email template preview on :3001
 pnpm build           # production build
 pnpm test            # vitest
 pnpm typecheck       # tsc --noEmit

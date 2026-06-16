@@ -10,14 +10,23 @@ import { tanstackStartCookies } from 'better-auth/tanstack-start';
 import { env } from '#/configs/env';
 import { type Database, getDb } from '#/db/client';
 import { account, invitation, session, user, verification } from '#/db/schema';
+import {
+  sendPasswordResetEmail,
+  sendVerificationEmail,
+} from '#/lib/email/auth-emails';
+import { assertEmailTransportConfigured } from '#/lib/email/transport';
 
 import { createInviteStore } from './invite-store';
 
 /**
- * Builds the Better Auth instance against `db`. The db is injected (rather than
- * read from `getDb()` inside) so integration tests can bind the test container.
+ * `db` is injected rather than read from `getDb()` so integration tests can
+ * bind the test container.
  */
 export function createAuth(db: Database) {
+  // Fail on boot if prod lacks a mail transport — Better Auth swallows the
+  // per-send throw, so this is the only place a misconfig surfaces.
+  assertEmailTransportConfigured();
+
   const hasUsers = async () => {
     // Existence probe (not count) keeps this O(1) on the signup hot path; a query
     // error propagates and fails the gate closed rather than reading as no users.
@@ -46,7 +55,32 @@ export function createAuth(db: Database) {
         },
       },
     },
-    emailAndPassword: { enabled: true },
+    emailAndPassword: {
+      enabled: true,
+      sendResetPassword: async ({ token, user: recipient }) => {
+        // Email an app reset link, not Better Auth's `url`: that callback 400s
+        // without a client-supplied `callbackURL`. The reset page reads `?token`
+        // and calls authClient.resetPassword.
+        const resetUrl = new URL('/reset-password', env.BETTER_AUTH_URL);
+        resetUrl.searchParams.set('token', token);
+        await sendPasswordResetEmail({
+          name: recipient.name,
+          to: recipient.email,
+          url: resetUrl.href,
+        });
+      },
+    },
+    emailVerification: {
+      autoSignInAfterVerification: true,
+      sendOnSignUp: true,
+      sendVerificationEmail: async ({ url, user: recipient }) => {
+        await sendVerificationEmail({
+          name: recipient.name,
+          to: recipient.email,
+          url,
+        });
+      },
+    },
     plugins: [
       admin(),
       // `enabled: hasUsers` keeps the gate open for the first signup only.
