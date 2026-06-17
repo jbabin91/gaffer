@@ -26,15 +26,26 @@ export function resolveLevel(
 // devDependency) is tree-shaken out of the production bundle.
 const isDev = import.meta.env.DEV;
 
-// Read from process.env directly: the logger is bootstrap infrastructure below
-// t3-env, and jsdom hook tests load it eagerly before t3-env is available.
-const envLevel = process.env.LOG_LEVEL;
+// import.meta.env.SSR is statically replaced per build, so the process.env read
+// and the pino-pretty transport below are dead-code-eliminated from the client
+// bundle — process is undefined in the browser and would otherwise throw.
+const isBrowser = !import.meta.env.SSR;
+
+// Read the level directly off the environment: the logger is bootstrap
+// infrastructure below t3-env. Server uses process.env; the browser has no
+// process, so it reads the Vite-exposed VITE_LOG_LEVEL instead.
+const envLevel: string | undefined = isBrowser
+  ? import.meta.env.VITE_LOG_LEVEL
+  : process.env.LOG_LEVEL;
 const level = resolveLevel(envLevel, isDev);
 
 export const logger = pino({
+  // asObject routes browser logs through console.* as structured records.
+  browser: { asObject: true },
   level,
-  // fast-redact wildcards match exactly one level, so secrets must sit at a
-  // declared depth; headers are the 2-level carriers, listed explicitly.
+  // pino's browser build has no fast-redact, so this list only scrubs
+  // server-side logs; client callers must never hand logError a secret-bearing
+  // object (form values), only the caught error.
   redact: [
     'password',
     '*.password',
@@ -53,7 +64,7 @@ export const logger = pino({
     '*.cookie',
     '*.headers.cookie',
   ],
-  ...(isDev
+  ...(isDev && !isBrowser
     ? {
         transport: {
           options: {
@@ -67,10 +78,26 @@ export const logger = pino({
     : {}),
 });
 
-// Warn once on an invalid LOG_LEVEL so a typo doesn't silently fall back.
+// Warn once on an invalid level so a typo doesn't silently fall back.
 if (envLevel && !LOG_LEVELS.has(envLevel)) {
   logger.warn(
     { invalidLevel: envLevel, usedLevel: level },
-    'ignoring unknown LOG_LEVEL; using default',
+    'ignoring unknown log level; using default',
   );
+}
+
+/**
+ * Records an unexpected error's cause for diagnosis. Surfacing to the user
+ * (inline form error vs toast) is the caller's decision — this only logs.
+ *
+ * The cause is for the redacted log only; never render it. User-facing copy
+ * must be a curated, code-keyed string (INFO-DISCLOSURE). Pass the caught error,
+ * not form values: the browser build cannot redact, so secrets would leak.
+ */
+export function logError(cause: unknown, message: string): void {
+  try {
+    logger.error({ err: cause }, message);
+  } catch {
+    // A logging primitive must never throw and take down the caller it protects.
+  }
 }

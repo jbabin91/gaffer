@@ -15,6 +15,7 @@ import {
   RESET_LINK_INVALID_MESSAGE,
 } from '#/lib/auth/errors';
 import { resetPasswordSchema } from '#/lib/auth/schemas';
+import { logError } from '#/lib/logger';
 
 export const Route = createFileRoute('/_auth/reset-password')({
   component: ResetPasswordPage,
@@ -40,7 +41,8 @@ function ResetPasswordPage() {
           if (!error) return null;
           if (error.status === 429) return { form: RATE_LIMITED_MESSAGE };
           return { form: RESET_LINK_INVALID_MESSAGE };
-        } catch {
+        } catch (error) {
+          logError(error, 'password reset failed');
           return { form: NETWORK_ERROR_MESSAGE };
         }
       },

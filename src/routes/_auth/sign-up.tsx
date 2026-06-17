@@ -10,6 +10,7 @@ import {
 import { signUpWithInvite } from '#/lib/auth/client';
 import { NETWORK_ERROR_MESSAGE, signUpFormError } from '#/lib/auth/errors';
 import { signUpSchema } from '#/lib/auth/schemas';
+import { logError } from '#/lib/logger';
 
 export const Route = createFileRoute('/_auth/sign-up')({
   component: SignUpPage,
@@ -32,7 +33,8 @@ function SignUpPage() {
             password: value.password,
           });
           return error ? signUpFormError(error.code) : null;
-        } catch {
+        } catch (error) {
+          logError(error, 'sign-up request failed');
           return { form: NETWORK_ERROR_MESSAGE };
         }
       },

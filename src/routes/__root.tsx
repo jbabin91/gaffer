@@ -11,6 +11,7 @@ import {
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
+import { RootError } from '#/components/root-error';
 import { SignOutButton } from '#/components/sign-out-button';
 import { ThemeSwitcher } from '#/components/theme-switcher';
 import TanStackQueryDevtools from '#/integrations/tanstack-query/devtools';
@@ -31,18 +32,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   }),
   shellComponent: RootComponent,
 });
-
-function RootError({ error }: { error: Error }) {
-  return (
-    <main className="mx-auto max-w-lg px-4 py-16 text-center" role="alert">
-      <h1 className="text-xl font-semibold">Something went wrong</h1>
-      <p className="mt-2 text-sm text-muted-fg">{error.message}</p>
-      <Link className="mt-4 inline-block text-primary hover:underline" to="/">
-        Reload
-      </Link>
-    </main>
-  );
-}
 
 function RootComponent() {
   return (

@@ -1,8 +1,13 @@
-// These strings are the only auth-failure text users ever see; raw server
-// error.message is never surfaced.
+// Only failure text users ever see — raw error.message is never surfaced.
 
 export const NETWORK_ERROR_MESSAGE =
   'Could not reach the server. Check your connection and try again.';
+
+export const SIGN_OUT_FAILED_MESSAGE =
+  'Could not sign you out. Try again in a moment.';
+
+export const UNEXPECTED_ERROR_MESSAGE =
+  'Something went wrong on our end. Try reloading the page.';
 
 export const RESET_LINK_INVALID_MESSAGE =
   'This reset link is invalid or has expired. Request a new one.';

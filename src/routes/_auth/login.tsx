@@ -11,6 +11,7 @@ import {
 import { authClient } from '#/lib/auth/client';
 import { NETWORK_ERROR_MESSAGE, RATE_LIMITED_MESSAGE } from '#/lib/auth/errors';
 import { loginSchema, sanitizeRedirect } from '#/lib/auth/schemas';
+import { logError } from '#/lib/logger';
 
 export const Route = createFileRoute('/_auth/login')({
   component: LoginPage,
@@ -40,7 +41,8 @@ function LoginPage() {
           if (!error) return null;
           if (error.status === 429) return { form: RATE_LIMITED_MESSAGE };
           return { form: 'Invalid email or password.' };
-        } catch {
+        } catch (error) {
+          logError(error, 'sign-in request failed');
           return { form: NETWORK_ERROR_MESSAGE };
         }
       },

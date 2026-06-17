@@ -11,6 +11,7 @@ import {
 import { authClient } from '#/lib/auth/client';
 import { NETWORK_ERROR_MESSAGE, RATE_LIMITED_MESSAGE } from '#/lib/auth/errors';
 import { forgotPasswordSchema } from '#/lib/auth/schemas';
+import { logError } from '#/lib/logger';
 
 export const Route = createFileRoute('/_auth/forgot-password')({
   component: ForgotPasswordPage,
@@ -34,7 +35,8 @@ function ForgotPasswordPage() {
           // account existence unobservable.
           if (error?.status === 429) return { form: RATE_LIMITED_MESSAGE };
           return null;
-        } catch {
+        } catch (error) {
+          logError(error, 'password reset request failed');
           return { form: NETWORK_ERROR_MESSAGE };
         }
       },
