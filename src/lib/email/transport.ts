@@ -2,7 +2,7 @@ import '@tanstack/react-start/server-only';
 
 import { createTransport, type Transporter } from 'nodemailer';
 
-import { env } from '#/configs/env';
+import { env } from '#/configs/env/server';
 import { logger } from '#/lib/logger';
 
 import { planEmailTransport } from './transport-plan';

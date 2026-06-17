@@ -1,9 +1,18 @@
+import '@tanstack/react-start/server-only';
+
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
 
 export const env = createEnv({
   emptyStringAsUndefined: true,
-  runtimeEnv: process.env,
+  runtimeEnv: {
+    ...process.env,
+    // A Sentry DSN isn't secret. The client needs VITE_SENTRY_DSN, so the server
+    // reuses it — set the DSN once. SENTRY_DSN overrides (e.g. a separate
+    // project). || not ??: a blank SENTRY_DSN= must still fall back to the client var.
+    // oxlint-disable-next-line typescript/prefer-nullish-coalescing
+    SENTRY_DSN: process.env.SENTRY_DSN || process.env.VITE_SENTRY_DSN,
+  },
   server: {
     // Reject short values and the placeholder so a verbatim-copied deploy fails fast.
     BETTER_AUTH_SECRET: z
@@ -19,6 +28,11 @@ export const env = createEnv({
     DATABASE_URL: z.url(),
     // Optional in schema, but required once any SMTP transport is set.
     EMAIL_FROM: z.email().optional(),
+    // Defaults to VITE_SENTRY_DSN (see runtimeEnv). Unset = disabled; fails loud
+    // at boot on a bad value (no users hit).
+    SENTRY_DSN: z.url().optional(),
+    // Falls back to 0.1 in prod, 1 in dev when unset.
+    SENTRY_TRACES_SAMPLE_RATE: z.coerce.number().min(0).max(1).optional(),
     // Any SMTP provider URL; takes precedence over CF_EMAIL_TOKEN.
     SMTP_URL: z.url().optional(),
   },

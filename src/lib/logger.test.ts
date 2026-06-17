@@ -1,6 +1,14 @@
-import { describe, expect, it, vi } from 'vitest';
+import pino from 'pino';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { logError, logger, resolveLevel } from './logger';
+import { SECRET_KEYS } from '#/configs/secret-keys';
+
+import { logError, logger, REDACT_PATHS, resolveLevel } from './logger';
+
+const { captureException } = vi.hoisted(() => ({
+  captureException: vi.fn(() => ''),
+}));
+vi.mock('@sentry/tanstackstart-react', () => ({ captureException }));
 
 describe('resolveLevel', () => {
   it('honors a valid LOG_LEVEL regardless of environment', () => {
@@ -50,5 +58,86 @@ describe('logError', () => {
 
     expect(() => logError(new Error('boom'), 'something failed')).not.toThrow();
     spy.mockRestore();
+  });
+
+  describe('Sentry forwarding gated on PROD', () => {
+    beforeEach(() => {
+      captureException.mockClear();
+      vi.spyOn(logger, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it('does not forward to Sentry outside prod (dev sink is pino)', () => {
+      logError(new Error('boom'), 'something failed');
+
+      expect(captureException).not.toHaveBeenCalled();
+    });
+
+    it('forwards the cause to Sentry in prod', () => {
+      vi.stubEnv('PROD', true);
+      const cause = new Error('boom');
+
+      logError(cause, 'something failed');
+
+      expect(captureException).toHaveBeenCalledWith(cause);
+    });
+  });
+});
+
+function captureLog(payload: Record<string, unknown>): string {
+  let line = '';
+  const log = pino(
+    { redact: REDACT_PATHS },
+    {
+      write(chunk: string) {
+        line = chunk;
+      },
+    },
+  );
+
+  log.info(payload, 'msg');
+  return line;
+}
+
+describe('server log redaction (REDACT_PATHS)', () => {
+  it.each(SECRET_KEYS)(
+    'redacts %s at the top level and one level deep',
+    (key) => {
+      const line = captureLog({
+        deep: { [key]: 'topsecret' },
+        [key]: 'topsecret',
+      });
+
+      expect(line).not.toContain('topsecret');
+      expect(line).toContain('[Redacted]');
+    },
+  );
+
+  it('redacts the two-level header carriers the wildcards miss', () => {
+    const line = captureLog({
+      req: {
+        headers: { authorization: 'Bearer topsecret', cookie: 's=topsecret' },
+      },
+    });
+
+    expect(line).not.toContain('topsecret');
+    expect(line).toContain('[Redacted]');
+  });
+
+  it('leaves non-secret fields intact', () => {
+    expect(captureLog({ status: 'ok-200' })).toContain('ok-200');
+  });
+
+  it('does not redact a non-header secret two levels deep (shallow by design)', () => {
+    // fast-redact wildcards match one level, so a secret nested past *.key and
+    // not under headers leaks server-side; depth is the Sentry scrubber's job.
+    // Pins the deliberate pino-vs-scrubber asymmetry so a redact-list change can't
+    // silently alter the depth contract.
+    expect(captureLog({ body: { user: { token: 'topsecret' } } })).toContain(
+      'topsecret',
+    );
   });
 });

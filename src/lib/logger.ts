@@ -1,4 +1,7 @@
+import * as Sentry from '@sentry/tanstackstart-react';
 import pino from 'pino';
+
+import { SECRET_KEYS } from '#/configs/secret-keys';
 
 const LOG_LEVELS = new Set([
   'fatal',
@@ -31,39 +34,28 @@ const isDev = import.meta.env.DEV;
 // bundle — process is undefined in the browser and would otherwise throw.
 const isBrowser = !import.meta.env.SSR;
 
-// Read the level directly off the environment: the logger is bootstrap
-// infrastructure below t3-env. Server uses process.env; the browser has no
-// process, so it reads the Vite-exposed VITE_LOG_LEVEL instead.
+// Bootstrap infrastructure below t3-env; browser has no process, so it reads
+// the Vite-exposed VITE_LOG_LEVEL instead.
 const envLevel: string | undefined = isBrowser
   ? import.meta.env.VITE_LOG_LEVEL
   : process.env.LOG_LEVEL;
 const level = resolveLevel(envLevel, isDev);
 
+// pino's browser build has no fast-redact, so this list only scrubs server-side
+// logs; client callers must never hand logError a secret-bearing object (form
+// values), only the caught error. fast-redact wildcards match exactly one level,
+// so headers are the 2-level carriers, listed explicitly. Derived from
+// SECRET_KEYS so it can't drift from the Sentry scrubber's key set.
+export const REDACT_PATHS = [
+  ...SECRET_KEYS.flatMap((key) => [key, `*.${key}`]),
+  '*.headers.authorization',
+  '*.headers.cookie',
+];
+
 export const logger = pino({
-  // asObject routes browser logs through console.* as structured records.
   browser: { asObject: true },
   level,
-  // pino's browser build has no fast-redact, so this list only scrubs
-  // server-side logs; client callers must never hand logError a secret-bearing
-  // object (form values), only the caught error.
-  redact: [
-    'password',
-    '*.password',
-    'token',
-    '*.token',
-    'secret',
-    '*.secret',
-    'apiKey',
-    '*.apiKey',
-    'inviteCode',
-    '*.inviteCode',
-    'authorization',
-    '*.authorization',
-    '*.headers.authorization',
-    'cookie',
-    '*.cookie',
-    '*.headers.cookie',
-  ],
+  redact: REDACT_PATHS,
   ...(isDev && !isBrowser
     ? {
         transport: {
@@ -78,7 +70,6 @@ export const logger = pino({
     : {}),
 });
 
-// Warn once on an invalid level so a typo doesn't silently fall back.
 if (envLevel && !LOG_LEVELS.has(envLevel)) {
   logger.warn(
     { invalidLevel: envLevel, usedLevel: level },
@@ -97,6 +88,9 @@ if (envLevel && !LOG_LEVELS.has(envLevel)) {
 export function logError(cause: unknown, message: string): void {
   try {
     logger.error({ err: cause }, message);
+    if (import.meta.env.PROD) {
+      Sentry.captureException(cause);
+    }
   } catch {
     // A logging primitive must never throw and take down the caller it protects.
   }

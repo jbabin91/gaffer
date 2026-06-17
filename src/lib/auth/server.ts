@@ -7,7 +7,7 @@ import { betterAuth } from 'better-auth/minimal';
 import { admin } from 'better-auth/plugins';
 import { tanstackStartCookies } from 'better-auth/tanstack-start';
 
-import { env } from '#/configs/env';
+import { env } from '#/configs/env/server';
 import { type Database, getDb } from '#/db/client';
 import { account, invitation, session, user, verification } from '#/db/schema';
 import {

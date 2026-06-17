@@ -1,4 +1,6 @@
 allowBuilds:
+  # Only needed for source-map upload (deferred); flip to true when that lands.
+  '@sentry/cli': false
   cpu-features: false
   esbuild: true
   lefthook: true
