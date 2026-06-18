@@ -1,7 +1,7 @@
 import { expect, FIRST_MANAGER, test } from './fixtures';
 import { latestResetToken } from './support/db';
 
-const GATED_URL = /localhost:\d+\/$/;
+const GATED_URL = /\/squad$/;
 const NEW_PASSWORD = 'e2e-password-2';
 
 test('signs up, signs out, and signs back in through the forms', async ({
@@ -15,10 +15,9 @@ test('signs up, signs out, and signs back in through the forms', async ({
 
   await page.getByRole('button', { name: 'Sign out' }).click();
   await expect(page).toHaveURL(/\/login/);
-  // The control is gated to the _app subtree, so it's absent on /login.
   await expect(page.getByRole('button', { name: 'Sign out' })).toBeHidden();
 
-  await page.goto('/');
+  await page.goto('/squad');
   await expect(page).toHaveURL(/\/login/);
 
   await authPage.login(FIRST_MANAGER.email, FIRST_MANAGER.password);
@@ -42,7 +41,7 @@ test('resets the password through the forms and signs in with the new one', asyn
 
   // revokeSessionsOnPasswordReset evicts the pre-reset session; with cookieCache
   // off the gate sees that immediately and bounces the still-held cookie.
-  await page.goto('/');
+  await page.goto('/squad');
   await expect(page).toHaveURL(/\/login/);
 
   await authPage.login(FIRST_MANAGER.email, NEW_PASSWORD);

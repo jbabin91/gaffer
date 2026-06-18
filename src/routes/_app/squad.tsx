@@ -21,7 +21,7 @@ import { useActiveCareer } from '#/modules/career/hooks/use-active-career';
 import { AddPlayerModal } from '#/modules/player/components/add-player-modal';
 import { useSquad } from '#/modules/player/hooks/use-players';
 
-export const Route = createFileRoute('/_app/')({ component: SquadPage });
+export const Route = createFileRoute('/_app/squad')({ component: SquadPage });
 
 function SquadPage() {
   const mounted = useMounted();

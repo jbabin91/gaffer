@@ -1,6 +1,6 @@
 'use client';
 
-import { useNavigate, useRouter, useRouterState } from '@tanstack/react-router';
+import { useNavigate, useRouter } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
 import { Button } from '#/components/ui/button';
@@ -11,12 +11,9 @@ import { logError } from '#/lib/logger';
 export function SignOutButton() {
   const navigate = useNavigate();
   const router = useRouter();
-  // Header is global; only render inside the gated _app subtree.
-  const inApp = useRouterState({
-    select: (state) => state.matches.some((match) => match.routeId === '/_app'),
-  });
+  const { data: session } = authClient.useSession();
 
-  if (!inApp) return null;
+  if (!session) return null;
 
   const signOut = async () => {
     try {

@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -15,10 +14,11 @@ const logError = vi.hoisted(() => vi.fn());
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => navigate,
   useRouter: () => ({ invalidate }),
-  useRouterState: () => true,
 }));
 vi.mock('sonner', () => ({ toast: { error: toastError } }));
-vi.mock('#/lib/auth/client', () => ({ authClient: { signOut } }));
+vi.mock('#/lib/auth/client', () => ({
+  authClient: { signOut, useSession: () => ({ data: { user: { id: 'u1' } } }) },
+}));
 vi.mock('#/lib/logger', () => ({ logError }));
 
 function clickSignOut() {

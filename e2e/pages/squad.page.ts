@@ -1,6 +1,6 @@
 import { type Locator, type Page } from '@playwright/test';
 
-/** The home route: the create-career form when empty, the squad view otherwise. */
+/** The gated squad route: the create-career form when empty, the squad otherwise. */
 export class SquadPage {
   readonly careerNameField: Locator;
   readonly createButton: Locator;
@@ -11,7 +11,7 @@ export class SquadPage {
   }
 
   async goto(): Promise<void> {
-    await this.page.goto('/');
+    await this.page.goto('/squad');
   }
 
   async createCareer(name: string): Promise<void> {
@@ -19,7 +19,6 @@ export class SquadPage {
     await this.createButton.click();
   }
 
-  /** The active career renders as the level-1 heading once one exists. */
   heading(name: string): Locator {
     return this.page.getByRole('heading', { level: 1, name });
   }

@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { render, screen, waitFor } from '@testing-library/react';
 import { toast } from 'sonner';
 import { describe, expect, it } from 'vitest';
