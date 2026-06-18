@@ -128,6 +128,13 @@ export const playerSnapshots = pgTable(
   (t) => [uniqueIndex('snapshot_player_week_idx').on(t.playerId, t.inGameWeek)],
 );
 
+// Role domain for the Better Auth admin plugin. `text({ enum })` is a TS-only
+// narrowing (no DB constraint, so the plugin's multi-role CSV writes still pass):
+// it makes a typo'd role literal a compile error, but a read role isn't exhaustive.
+export const USER_ROLES = ['user', 'admin'] as const;
+export type UserRole = (typeof USER_ROLES)[number];
+export const ADMIN_ROLE: UserRole = 'admin';
+
 // Better Auth tables. Field names mirror the required schema — regenerate with
 // `@better-auth/cli generate` when auth plugins change. See decision 0013.
 export const user = pgTable('user', {
@@ -140,7 +147,7 @@ export const user = pgTable('user', {
   id: text().primaryKey(),
   image: text(),
   name: text().notNull(),
-  role: text(),
+  role: text({ enum: USER_ROLES }),
   updatedAt: timestamp({ withTimezone: true })
     .notNull()
     .defaultNow()

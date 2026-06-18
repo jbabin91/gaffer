@@ -11,7 +11,14 @@ import { eq } from 'drizzle-orm';
 
 import { env } from '#/configs/env/server';
 import { type Database, getDb } from '#/db/client';
-import { account, invitation, session, user, verification } from '#/db/schema';
+import {
+  account,
+  ADMIN_ROLE,
+  invitation,
+  session,
+  user,
+  verification,
+} from '#/db/schema';
 import {
   sendPasswordResetEmail,
   sendVerificationEmail,
@@ -47,7 +54,7 @@ export function createAuth(
     const rows = await db
       .select({ id: user.id })
       .from(user)
-      .where(eq(user.role, 'admin'))
+      .where(eq(user.role, ADMIN_ROLE))
       .limit(1);
     return rows.length > 0;
   };
@@ -74,7 +81,7 @@ export function createAuth(
             ) {
               throw new APIError('FORBIDDEN', { code: 'INVITE_REQUIRED' });
             }
-            return { data: { ...newUser, role: 'admin' } };
+            return { data: { ...newUser, role: ADMIN_ROLE } };
           },
         },
       },

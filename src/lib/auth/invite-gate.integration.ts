@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { DB } from '#/db/client';
 
-import { invitation, invitePending, user } from '#/db/schema';
+import { invitation, invitePending, user, type UserRole } from '#/db/schema';
 import { createInviteStore } from '#/lib/auth/invite-store';
 import { createAuth } from '#/lib/auth/server';
 import { logger } from '#/lib/logger';
@@ -32,7 +32,7 @@ async function signUp(body: Record<string, unknown>) {
   return { body: await res.json().catch(() => null), status: res.status };
 }
 
-function insertUser(id: string, role: string | null = null) {
+function insertUser(id: string, role: UserRole | null = null) {
   return db
     .insert(user)
     .values({ email: `${id}@example.com`, id, name: id, role });
