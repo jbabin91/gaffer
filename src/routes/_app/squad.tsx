@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '#/components/ui/table';
-import { useMounted } from '#/lib/use-mounted';
+import { useMounted } from '#/hooks/use-mounted';
 import { CareerSwitcher } from '#/modules/career/components/career-switcher';
 import { CreateCareerForm } from '#/modules/career/components/create-career-form';
 import { useActiveCareer } from '#/modules/career/hooks/use-active-career';

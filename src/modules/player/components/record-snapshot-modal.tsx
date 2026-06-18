@@ -11,7 +11,7 @@ import {
   ModalTitle,
 } from '#/components/ui/modal';
 import { NumberField, NumberInput } from '#/components/ui/number-field';
-import { numberOrUndefined } from '#/lib/number';
+import { numberOrUndefined } from '#/lib/utils/number';
 import { useRecordSnapshot } from '#/modules/player/hooks/use-players';
 
 type SnapshotDefaults = {

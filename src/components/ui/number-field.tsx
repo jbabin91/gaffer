@@ -10,7 +10,7 @@ import {
 } from 'react-aria-components/NumberField';
 
 import { Input, InputGroup } from '#/components/ui/input';
-import { cx } from '#/lib/primitive';
+import { cx } from '#/lib/utils/primitive';
 
 import { fieldStyles } from './field';
 

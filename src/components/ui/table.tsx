@@ -28,7 +28,7 @@ import {
 import { twJoin, twMerge } from 'tailwind-merge';
 
 import { CardDescription, CardTitle } from '#/components/ui/card';
-import { cx } from '#/lib/primitive';
+import { cx } from '#/lib/utils/primitive';
 
 import { Checkbox } from './checkbox';
 

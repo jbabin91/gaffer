@@ -6,7 +6,7 @@ import { Dialog as PrimitiveDialog } from 'react-aria-components/Dialog';
 import { Heading, type HeadingProps } from 'react-aria-components/Heading';
 import { twMerge } from 'tailwind-merge';
 
-import { cx } from '#/lib/primitive';
+import { cx } from '#/lib/utils/primitive';
 
 import { Button, type ButtonProps } from './button';
 

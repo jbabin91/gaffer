@@ -19,7 +19,8 @@ user-scoped data and invite gating are still in progress.
 
 Code is organized by feature under `src/modules/<feature>/`. Feature code —
 including auth — lives in a module; `src/lib/` is reserved for cross-cutting
-infra (logger, request-context) that no single feature owns.
+infra that no single feature owns, organized by concern (`lib/logging/`,
+`lib/utils/`, `lib/email/`) rather than dumped flat.
 
 - `schemas/` — Zod input schemas (drizzle-zod, column-synced) plus the inferred
   input types, **one descriptively-named file per schema** (`schemas/login.ts`)

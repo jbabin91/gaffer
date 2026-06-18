@@ -10,7 +10,7 @@ import {
   type PopoverProps,
 } from 'react-aria-components/Popover';
 
-import { cx } from '#/lib/primitive';
+import { cx } from '#/lib/utils/primitive';
 
 import {
   DialogBody,

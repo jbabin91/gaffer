@@ -3,7 +3,7 @@ import {
   type TextFieldProps as TextFieldPrimitiveProps,
 } from 'react-aria-components/TextField';
 
-import { cx } from '#/lib/primitive';
+import { cx } from '#/lib/utils/primitive';
 
 import { fieldStyles } from './field';
 

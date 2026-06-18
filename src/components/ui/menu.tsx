@@ -17,7 +17,7 @@ import {
 import { twMerge } from 'tailwind-merge';
 import { tv, type VariantProps } from 'tailwind-variants';
 
-import { cx } from '#/lib/primitive';
+import { cx } from '#/lib/utils/primitive';
 
 import {
   DropdownDescription,

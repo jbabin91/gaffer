@@ -6,7 +6,7 @@ import {
 } from 'react-aria-components/Button';
 import { tv, type VariantProps } from 'tailwind-variants';
 
-import { cx } from '#/lib/primitive';
+import { cx } from '#/lib/utils/primitive';
 
 export const buttonStyles = tv({
   base: [

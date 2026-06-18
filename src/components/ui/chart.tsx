@@ -40,7 +40,7 @@ import {
 import { twJoin, twMerge } from 'tailwind-merge';
 
 import { useIsMobile } from '#/hooks/use-mobile';
-import { cx } from '#/lib/primitive';
+import { cx } from '#/lib/utils/primitive';
 
 type ChartType = 'default' | 'stacked' | 'percent';
 type ChartLayout = 'horizontal' | 'vertical' | 'radial';

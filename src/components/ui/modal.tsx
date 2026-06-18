@@ -9,7 +9,7 @@ import {
   Modal as ModalPrimitive,
 } from 'react-aria-components/Modal';
 
-import { cx } from '#/lib/primitive';
+import { cx } from '#/lib/utils/primitive';
 
 import {
   Dialog,

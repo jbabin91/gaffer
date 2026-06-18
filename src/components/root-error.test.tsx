@@ -12,7 +12,7 @@ vi.mock('@tanstack/react-router', () => ({
 }));
 
 const logError = vi.hoisted(() => vi.fn());
-vi.mock('#/lib/logger', () => ({ logError }));
+vi.mock('#/lib/logging/logger', () => ({ logError }));
 
 describe('RootError', () => {
   it('renders curated copy and never leaks the raw error message', () => {

@@ -12,7 +12,7 @@ import {
 import { composeRenderProps } from 'react-aria-components/composeRenderProps';
 import { twMerge } from 'tailwind-merge';
 
-import { cx } from '#/lib/primitive';
+import { cx } from '#/lib/utils/primitive';
 
 export function CheckboxGroup({ className, ...props }: CheckboxGroupProps) {
   return (

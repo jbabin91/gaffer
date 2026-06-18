@@ -5,7 +5,7 @@ import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardHeader } from '#/components/ui/card';
 import { Heading } from '#/components/ui/heading';
 import { Loader } from '#/components/ui/loader';
-import { useMounted } from '#/lib/use-mounted';
+import { useMounted } from '#/hooks/use-mounted';
 import { DevelopmentChart } from '#/modules/player/components/development-chart';
 import { RecordSnapshotModal } from '#/modules/player/components/record-snapshot-modal';
 import {

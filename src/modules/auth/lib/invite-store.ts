@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto';
 import type { Database } from '#/db/client';
 
 import { invitePending } from '#/db/schema';
-import { logger } from '#/lib/logger';
+import { logger } from '#/lib/logging/logger';
 
 // Matches the plugin's MemoryInviteStore: entries are evicted 5 minutes after
 // they're written (the validate→signup window).

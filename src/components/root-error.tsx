@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
-import { logError } from '#/lib/logger';
+import { logError } from '#/lib/logging/logger';
 import { UNEXPECTED_ERROR_MESSAGE } from '#/lib/messages';
 
 const LOG_MESSAGE = 'root error boundary caught an error';

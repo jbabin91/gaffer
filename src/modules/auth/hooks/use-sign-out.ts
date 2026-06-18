@@ -3,7 +3,7 @@
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
-import { logError } from '#/lib/logger';
+import { logError } from '#/lib/logging/logger';
 import { authClient } from '#/modules/auth/lib/client';
 import { SIGN_OUT_FAILED_MESSAGE } from '#/modules/auth/messages';
 

@@ -6,7 +6,7 @@ import {
   type InputProps,
 } from 'react-aria-components/Input';
 
-import { cx } from '#/lib/primitive';
+import { cx } from '#/lib/utils/primitive';
 
 export function Input({ className, ...props }: InputProps) {
   return (

@@ -8,7 +8,7 @@ import {
   CardFooter,
   CardHeader,
 } from '#/components/ui/card';
-import { logError } from '#/lib/logger';
+import { logError } from '#/lib/logging/logger';
 import { authClient } from '#/modules/auth/lib/client';
 import { sanitizeRedirect } from '#/modules/auth/lib/sanitize-redirect';
 import {

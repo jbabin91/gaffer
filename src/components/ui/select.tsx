@@ -10,7 +10,7 @@ import {
 } from 'react-aria-components/Select';
 import { twJoin } from 'tailwind-merge';
 
-import { cx } from '#/lib/primitive';
+import { cx } from '#/lib/utils/primitive';
 
 import {
   DropdownDescription,

@@ -21,7 +21,7 @@ import {
   SelectTrigger,
 } from '#/components/ui/select';
 import { TextField } from '#/components/ui/text-field';
-import { numberOrUndefined } from '#/lib/number';
+import { numberOrUndefined } from '#/lib/utils/number';
 import { useCatalogSearch } from '#/modules/catalog/hooks/use-catalog-search';
 import { useAddPlayer } from '#/modules/player/hooks/use-players';
 

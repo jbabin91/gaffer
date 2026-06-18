@@ -7,7 +7,7 @@ import {
   CardFooter,
   CardHeader,
 } from '#/components/ui/card';
-import { logError } from '#/lib/logger';
+import { logError } from '#/lib/logging/logger';
 import { signUpWithInvite } from '#/modules/auth/lib/client';
 import {
   NETWORK_ERROR_MESSAGE,

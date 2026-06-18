@@ -19,7 +19,7 @@ vi.mock('sonner', () => ({ toast: { error: toastError } }));
 vi.mock('#/modules/auth/lib/client', () => ({
   authClient: { signOut, useSession: () => ({ data: { user: { id: 'u1' } } }) },
 }));
-vi.mock('#/lib/logger', () => ({ logError }));
+vi.mock('#/lib/logging/logger', () => ({ logError }));
 
 function clickSignOut() {
   render(<SignOutButton />);

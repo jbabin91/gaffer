@@ -17,7 +17,7 @@ Intent UI components on React Aria, styled with Tailwind v4 (see
   `src/styles/globals.css`.
 - Runtime class composition uses `tailwind-variants` (`tv`) for component
   variants and `tailwind-merge` for conflict resolution. `cx` lives in
-  `src/lib/primitive.ts`.
+  `src/lib/utils/primitive.ts`.
 - `tw-animate-css` and `tailwindcss-react-aria-components` provide animation and
   React-Aria state variants.
 
