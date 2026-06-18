@@ -12,16 +12,15 @@ export const RESET_LINK_INVALID_MESSAGE =
 export const RATE_LIMITED_MESSAGE =
   'Too many attempts. Wait a moment and try again.';
 
-type SignUpFormError =
-  | { fields: { email: string } }
-  | { fields: { inviteCode: string } }
+// A discriminated union, not a both-optional product: TanStack Form treats any
+// object with a `fields` key as an errored form, so `{}` / `{ fields: {} }` would
+// be an errored-but-invisible state. `undefined` is the only "no error" signal.
+export type AuthSubmitErrors =
+  | { fields: Record<string, string> }
   | { form: string };
 
-/**
- * Maps a sign-up error code to TanStack Form's `{ fields }` / `{ form }` shape,
- * routing invite-identity failures to the field a user can fix.
- */
-export function signUpFormError(code: string | undefined): SignUpFormError {
+/** Routes invite/identity failures to the field a user can fix; other codes fall back to a form-level message. */
+export function signUpFormError(code: string | undefined): AuthSubmitErrors {
   switch (code) {
     case 'EMAIL_MISMATCH': {
       return {
