@@ -2,7 +2,7 @@ import { createFileRoute, Link, redirect } from '@tanstack/react-router';
 
 import { buttonStyles } from '#/components/ui/button';
 import { Heading } from '#/components/ui/heading';
-import { getSessionFn } from '#/lib/auth/functions';
+import { getSessionFn } from '#/modules/auth/api/get-session';
 
 export const Route = createFileRoute('/_public/')({
   beforeLoad: async () => {

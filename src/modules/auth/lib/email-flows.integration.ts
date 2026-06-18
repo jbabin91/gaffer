@@ -3,8 +3,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DB } from '#/db/client';
 
 import { user } from '#/db/schema';
-import { createAuth } from '#/lib/auth/server';
 import { sendEmail } from '#/lib/email/transport';
+import { createAuth } from '#/modules/auth/lib/server';
 import { getTestDb, resetDb } from '#test/db';
 
 vi.mock('#/lib/email/transport', () => ({

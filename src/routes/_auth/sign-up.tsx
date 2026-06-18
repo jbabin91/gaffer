@@ -7,10 +7,13 @@ import {
   CardFooter,
   CardHeader,
 } from '#/components/ui/card';
-import { signUpWithInvite } from '#/lib/auth/client';
-import { NETWORK_ERROR_MESSAGE, signUpFormError } from '#/lib/auth/errors';
-import { signUpSchema } from '#/lib/auth/schemas';
 import { logError } from '#/lib/logger';
+import { signUpWithInvite } from '#/modules/auth/lib/client';
+import {
+  NETWORK_ERROR_MESSAGE,
+  signUpFormError,
+} from '#/modules/auth/messages';
+import { signUpSchema } from '#/modules/auth/schemas/sign-up';
 
 export const Route = createFileRoute('/_auth/sign-up')({
   component: SignUpPage,

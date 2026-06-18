@@ -33,14 +33,16 @@ Auth becomes a feature module with a single home; `src/lib/auth/` is retired.
 
 - `src/modules/auth/` owns the whole feature:
   - `lib/server.ts` (Better Auth config, `server-only` marked), `lib/client.ts`
-    (the `authClient`, `client-only` marked), `lib/sanitize-redirect.ts`
-    (extracted from today's `schemas.ts`), `lib/invite-store.ts`
+    (the `authClient`; isomorphic — imported by the SSR'd header, so unmarked),
+    `lib/sanitize-redirect.ts` (extracted from today's `schemas.ts`),
+    `lib/invite-store.ts`
   - `api/get-session.ts` (was `lib/auth/functions.ts`): a static import of the
     marked server; an isomorphic RPC boundary, so it is _not_ marked
   - `schemas/` (form Zod) — one file per form, named so the filename is the
     schema: `login.ts`, `sign-up.ts`, `forgot-password.ts`, `reset-password.ts`,
-    plus a shared `fields.ts` for the reused field validators (email, password,
-    invite, name) — and `messages.ts` (curated auth copy) at the module root
+    plus a shared `fields.ts` for the genuinely reused field validators (email,
+    password; invite and name stay inline in `sign-up.ts`, their only caller) —
+    and `messages.ts` (curated auth copy) at the module root
   - `hooks/use-auth-submit.ts`, `hooks/use-sign-out.ts`
   - `components/` — the auth-form primitives (`auth-card`, `auth-links`) and one
     component per page (`login-form`, `sign-up-form`, `forgot-password-form`,
@@ -81,9 +83,9 @@ _button UI_ is authenticated-app chrome and belongs in the header layout
   feature-module convention; the curated-error invariant lives in one tested
   `useAuthSubmit`; a new auth page is a thin adapter.
 - Constraint: bundle isolation is enforced by the `@tanstack/react-start/server-only`
-  and `client-only` markers on `lib/server.ts` / `lib/client.ts`, not by folder —
-  the markers travel with the files. `api/get-session.ts` stays an unmarked
-  isomorphic boundary.
+  marker on `lib/server.ts`, not by folder — the marker travels with the file.
+  `lib/client.ts` and `api/get-session.ts` are isomorphic (the `authClient` is
+  imported by the SSR'd header), so neither is marked.
 - Constraint: only feature code moves — the auth `pgTable` definitions do **not**.
   "Schema" means two things: the per-form Zod validation schemas split into
   `modules/auth/schemas/`, but the Drizzle table schemas stay centrally

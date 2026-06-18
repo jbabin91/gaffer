@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { signUpFormError } from './errors';
+import { signUpFormError } from '#/modules/auth/messages';
 
 describe('signUpFormError', () => {
   it('routes an email-mismatch to the email field with curated copy', () => {

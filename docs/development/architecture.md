@@ -17,19 +17,45 @@ user-scoped data and invite gating are still in progress.
 
 ## Feature modules
 
-Code is organized by feature under `src/modules/<feature>/`:
+Code is organized by feature under `src/modules/<feature>/`. Feature code —
+including auth — lives in a module; `src/lib/` is reserved for cross-cutting
+infra (logger, request-context) that no single feature owns.
 
-- `schemas/` — zod input schemas (drizzle-zod, column-synced) plus the inferred
-  input types. Isomorphic: the api validators and any client form share them.
+- `schemas/` — Zod input schemas (drizzle-zod, column-synced) plus the inferred
+  input types, **one descriptively-named file per schema** (`schemas/login.ts`)
+  so the filename is the schema. Isomorphic: the api validators and any client
+  form share them.
 - `services/` — query logic, `fn(db, …)` (server-only).
-- `api/` — `createServerFn` endpoints. They dynamic-import their services so the
-  server-only query layer stays out of the client bundle (only the RPC stub and
-  the validator ship to the browser).
-- `hooks/` — TanStack Query hooks and query-options factories; call the api/
-  server functions.
+- `api/` — `createServerFn` endpoints, **one server fn per file**, holding only
+  `createServerFn` definitions and type re-exports (a plain export here drags
+  server deps into the client bundle). Auth's `api/get-session.ts` is the worked
+  example; `career`/`player`/`catalog` still bundle multiple fns and
+  dynamic-import their services, pending the static-import migration (`gf-fwi.17`).
+- `lib/` — module-local helpers and singletons (auth keeps its Better Auth
+  `server.ts`/`client.ts` here; `server.ts` carries the `server-only` marker).
+- `hooks/` — TanStack Query hooks and per-module query-options factories (the
+  TkDodo pattern; no generic key-factory abstraction).
 - `components/` — React components.
 
-Current modules: `career`, `player`, `catalog`.
+Two things both called "schema" stay distinct: the per-module Zod **validation**
+schemas above, and the Drizzle **table** schemas, which stay centrally
+aggregated in `src/db/schema.ts` for the single `drizzle({ schema })` import.
+
+**New module vs extend an existing one:** create a new module for a new domain
+entity with its own schema and lifecycle (a future `seasons` or `transfers`);
+extend a module for a new operation or view on an existing entity (a server fn,
+hook, or component into its `api/`/`hooks/`/`components/`). A tightly-coupled
+sub-domain (e.g. player snapshots) stays a file inside the parent module;
+anything used by two or more modules belongs in `src/lib` (infra) or
+`src/components/ui` (shared UI), never a module.
+
+These are deliberate, uniform choices — Zod validation schemas (not a separate
+models/validators split), tables centralized in `src/db` (not per-module `db/`
+folders), and the `#/` alias throughout. They diverge from the sibling
+finance-tracker app on purpose; keep new modules consistent with fc-2026 rather
+than harmonizing toward that reference.
+
+Current modules: `auth`, `career`, `player`, `catalog`.
 
 ## Data flow
 

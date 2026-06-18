@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { UNEXPECTED_ERROR_MESSAGE } from '#/lib/auth/errors';
+import { UNEXPECTED_ERROR_MESSAGE } from '#/lib/messages';
 
 import { RootError } from './root-error';
 

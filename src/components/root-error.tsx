@@ -1,8 +1,8 @@
 import { Link } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
-import { UNEXPECTED_ERROR_MESSAGE } from '#/lib/auth/errors';
 import { logError } from '#/lib/logger';
+import { UNEXPECTED_ERROR_MESSAGE } from '#/lib/messages';
 
 const LOG_MESSAGE = 'root error boundary caught an error';
 

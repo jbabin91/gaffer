@@ -8,14 +8,14 @@ import {
   CardFooter,
   CardHeader,
 } from '#/components/ui/card';
-import { authClient } from '#/lib/auth/client';
+import { logError } from '#/lib/logger';
+import { authClient } from '#/modules/auth/lib/client';
 import {
   NETWORK_ERROR_MESSAGE,
   RATE_LIMITED_MESSAGE,
   RESET_LINK_INVALID_MESSAGE,
-} from '#/lib/auth/errors';
-import { resetPasswordSchema } from '#/lib/auth/schemas';
-import { logError } from '#/lib/logger';
+} from '#/modules/auth/messages';
+import { resetPasswordSchema } from '#/modules/auth/schemas/reset-password';
 
 export const Route = createFileRoute('/_auth/reset-password')({
   component: ResetPasswordPage,

@@ -8,10 +8,14 @@ import {
   CardFooter,
   CardHeader,
 } from '#/components/ui/card';
-import { authClient } from '#/lib/auth/client';
-import { NETWORK_ERROR_MESSAGE, RATE_LIMITED_MESSAGE } from '#/lib/auth/errors';
-import { loginSchema, sanitizeRedirect } from '#/lib/auth/schemas';
 import { logError } from '#/lib/logger';
+import { authClient } from '#/modules/auth/lib/client';
+import { sanitizeRedirect } from '#/modules/auth/lib/sanitize-redirect';
+import {
+  NETWORK_ERROR_MESSAGE,
+  RATE_LIMITED_MESSAGE,
+} from '#/modules/auth/messages';
+import { loginSchema } from '#/modules/auth/schemas/login';
 
 export const Route = createFileRoute('/_auth/login')({
   component: LoginPage,

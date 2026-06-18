@@ -5,9 +5,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DB } from '#/db/client';
 
 import { invitation, invitePending, user, type UserRole } from '#/db/schema';
-import { createInviteStore } from '#/lib/auth/invite-store';
-import { createAuth } from '#/lib/auth/server';
 import { logger } from '#/lib/logger';
+import { createInviteStore } from '#/modules/auth/lib/invite-store';
+import { createAuth } from '#/modules/auth/lib/server';
 import { getTestDb, resetDb } from '#test/db';
 
 let db: DB;

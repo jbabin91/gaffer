@@ -8,10 +8,13 @@ import {
   CardFooter,
   CardHeader,
 } from '#/components/ui/card';
-import { authClient } from '#/lib/auth/client';
-import { NETWORK_ERROR_MESSAGE, RATE_LIMITED_MESSAGE } from '#/lib/auth/errors';
-import { forgotPasswordSchema } from '#/lib/auth/schemas';
 import { logError } from '#/lib/logger';
+import { authClient } from '#/modules/auth/lib/client';
+import {
+  NETWORK_ERROR_MESSAGE,
+  RATE_LIMITED_MESSAGE,
+} from '#/modules/auth/messages';
+import { forgotPasswordSchema } from '#/modules/auth/schemas/forgot-password';
 
 export const Route = createFileRoute('/_auth/forgot-password')({
   component: ForgotPasswordPage,
