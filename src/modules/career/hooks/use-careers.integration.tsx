@@ -2,6 +2,8 @@
 import { act, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type * as CareerService from '#/modules/career/services/careers';
+
 import { type DB } from '#/db/client';
 import { type CreateCareerInput } from '#/modules/career/schemas/careers';
 import { getTestDb, resetDb } from '#test/db';
@@ -16,18 +18,27 @@ function testDb(): DB {
   return dbRef.current;
 }
 
-vi.mock('#/modules/career/api/create-career', async () => {
-  const svc = await import('#/modules/career/services/careers');
-  return {
+// vitest hoists vi.mock above the ESM imports, so a factory can't close over the
+// top-level service import; mockApi loads it dynamically and threads the test db.
+const mockApi = vi.hoisted(
+  () =>
+    (build: (svc: typeof CareerService) => Record<string, unknown>) =>
+    async () =>
+      build(await import('#/modules/career/services/careers')),
+);
+
+vi.mock(
+  '#/modules/career/api/create-career',
+  mockApi((svc) => ({
     createCareerFn: ({ data }: { data: CreateCareerInput }) =>
       svc.createCareer(testDb(), data),
-  };
-});
+  })),
+);
 
-vi.mock('#/modules/career/api/list-careers', async () => {
-  const svc = await import('#/modules/career/services/careers');
-  return { listCareersFn: () => svc.listCareers(testDb()) };
-});
+vi.mock(
+  '#/modules/career/api/list-careers',
+  mockApi((svc) => ({ listCareersFn: () => svc.listCareers(testDb()) })),
+);
 
 beforeEach(async () => {
   await resetDb();

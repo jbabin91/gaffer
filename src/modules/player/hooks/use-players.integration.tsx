@@ -2,6 +2,8 @@
 import { act, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type * as PlayerService from '#/modules/player/services/players';
+
 import { type DB } from '#/db/client';
 import { createCareer } from '#/modules/career/services/careers';
 import {
@@ -28,51 +30,60 @@ function testDb(): DB {
   return dbRef.current;
 }
 
-vi.mock('#/modules/player/api/add-player', async () => {
-  const svc = await import('#/modules/player/services/players');
-  return {
+// vitest hoists vi.mock above the ESM imports, so a factory can't close over the
+// top-level service import; mockApi loads it dynamically and threads the test db.
+const mockApi = vi.hoisted(
+  () =>
+    (build: (svc: typeof PlayerService) => Record<string, unknown>) =>
+    async () =>
+      build(await import('#/modules/player/services/players')),
+);
+
+vi.mock(
+  '#/modules/player/api/add-player',
+  mockApi((svc) => ({
     addPlayerFn: ({ data }: { data: AddPlayerArgs }) =>
       svc.addPlayer(testDb(), data.careerId, data.input),
-  };
-});
+  })),
+);
 
-vi.mock('#/modules/player/api/get-player', async () => {
-  const svc = await import('#/modules/player/services/players');
-  return {
+vi.mock(
+  '#/modules/player/api/get-player',
+  mockApi((svc) => ({
     getPlayerFn: ({ data }: { data: string }) => svc.getPlayer(testDb(), data),
-  };
-});
+  })),
+);
 
-vi.mock('#/modules/player/api/get-player-snapshots', async () => {
-  const svc = await import('#/modules/player/services/players');
-  return {
+vi.mock(
+  '#/modules/player/api/get-player-snapshots',
+  mockApi((svc) => ({
     getPlayerSnapshotsFn: ({ data }: { data: string }) =>
       svc.getPlayerSnapshots(testDb(), data),
-  };
-});
+  })),
+);
 
-vi.mock('#/modules/player/api/list-squad', async () => {
-  const svc = await import('#/modules/player/services/players');
-  return {
+vi.mock(
+  '#/modules/player/api/list-squad',
+  mockApi((svc) => ({
     listSquadFn: ({ data }: { data: string }) => svc.listSquad(testDb(), data),
-  };
-});
+  })),
+);
 
-vi.mock('#/modules/player/api/record-snapshot', async () => {
-  const svc = await import('#/modules/player/services/players');
-  return {
+vi.mock(
+  '#/modules/player/api/record-snapshot',
+  mockApi((svc) => ({
     recordSnapshotFn: ({ data }: { data: RecordSnapshotArgs }) =>
       svc.recordSnapshot(testDb(), data.playerId, data.input),
-  };
-});
+  })),
+);
 
-vi.mock('#/modules/player/api/remove-player', async () => {
-  const svc = await import('#/modules/player/services/players');
-  return {
+vi.mock(
+  '#/modules/player/api/remove-player',
+  mockApi((svc) => ({
     removePlayerFn: ({ data }: { data: string }) =>
       svc.removePlayer(testDb(), data),
-  };
-});
+  })),
+);
 
 let db: DB;
 let careerId: string;
