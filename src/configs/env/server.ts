@@ -28,6 +28,10 @@ export const env = createEnv({
     DATABASE_URL: z.url(),
     // Optional in schema, but required once any SMTP transport is set.
     EMAIL_FROM: z.email().optional(),
+    // Designates the bootstrap admin on a fresh DB: only this email may sign up
+    // (becoming admin) while no admin exists, which removes the first-signup race.
+    // Required to bootstrap; ignored once an admin exists.
+    INITIAL_ADMIN_EMAIL: z.email().optional(),
     // Defaults to VITE_SENTRY_DSN (see runtimeEnv). Unset = disabled; fails loud
     // at boot on a bad value (no users hit).
     SENTRY_DSN: z.url().optional(),

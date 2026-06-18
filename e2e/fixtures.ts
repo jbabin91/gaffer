@@ -3,11 +3,12 @@ import { test as base } from '@playwright/test';
 import { AuthPage } from './pages/auth.page';
 import { SquadPage } from './pages/squad.page';
 import { resetE2eDb } from './support/db';
+import { E2E_ADMIN_EMAIL } from './support/env';
 
 export { expect } from '@playwright/test';
 
 export const FIRST_MANAGER = {
-  email: 'manager@example.com',
+  email: E2E_ADMIN_EMAIL,
   name: 'E2E Manager',
   password: 'e2e-password-1',
 };

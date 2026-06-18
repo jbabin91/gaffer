@@ -1,6 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
 
-import { E2E_BASE_URL, E2E_DATABASE_URL, E2E_PORT } from './e2e/support/env';
+import {
+  E2E_ADMIN_EMAIL,
+  E2E_BASE_URL,
+  E2E_DATABASE_URL,
+  E2E_PORT,
+} from './e2e/support/env';
 
 export default defineConfig({
   forbidOnly: !!process.env.CI,
@@ -21,6 +26,7 @@ export default defineConfig({
     env: {
       BETTER_AUTH_URL: E2E_BASE_URL,
       DATABASE_URL: E2E_DATABASE_URL,
+      INITIAL_ADMIN_EMAIL: E2E_ADMIN_EMAIL,
       PORT: String(E2E_PORT),
     },
     reuseExistingServer: false,

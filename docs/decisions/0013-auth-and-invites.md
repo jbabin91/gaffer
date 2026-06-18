@@ -4,17 +4,26 @@ Date: 2026-06-13
 Status: Accepted
 Updated: 2026-06-14; email verification + password reset in scope (not
 deferred); invites resolved to email-bound; transport: Cloudflare Email Service.
+Amended: 2026-06-17 (gf-fwi.2.7) — the first-admin bootstrap moved from
+first-signup-wins to an env-designated admin (`INITIAL_ADMIN_EMAIL`), closing a
+concurrent-signup race; see the Implementation status note below. The
+"first user is admin" framing in Context/Verification is the original model.
 
 > Implements the access model in `0009`. Background in
 > `research/0002-better-auth-invite-plugins.md`. The Better Auth 1.6
 > compatibility check passed (see Verification).
 
-**Implementation status (2026-06-15):** Better Auth core (email/password +
-admin), the email transport, the invite gate (`better-auth-invitation-only`
-with a DB-backed store and first-user-admin bootstrap), and the email
+**Implementation status (2026-06-15; bootstrap amended 2026-06-17):** Better Auth
+core (email/password + admin), the email transport, the invite gate
+(`better-auth-invitation-only` with a DB-backed store), and the email
 verification + password-reset flows (React Email templates rendered through the
 transport, with `sendOnSignUp` verification and a `pnpm email:dev` preview) have
-all landed. Email verification is sent but not yet _required_ to sign in
+all landed. The first admin is bootstrapped via an **env-designated email**
+(`INITIAL_ADMIN_EMAIL`): on a fresh DB only that address may register (and becomes
+admin), every other signup needs an invite, and the gate is open only until the
+first admin exists. This replaced the original first-signup-wins bootstrap, whose
+unserialized zero-user read let concurrent first signups both claim admin
+(gf-fwi.2.7). Email verification is sent but not yet _required_ to sign in
 (`requireEmailVerification` left off so the bootstrap admin isn't locked out).
 Password-reset emails link to an app `/reset-password?token=` page (consumed by
 the auth-UI work) rather than Better Auth's callback URL, which 400s without a

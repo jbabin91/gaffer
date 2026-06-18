@@ -21,7 +21,8 @@ let db: DB;
 beforeEach(async () => {
   await resetDb();
   db = getTestDb();
-  auth = createAuth(db);
+  // The sign-up test bootstraps first@example.com, so designate it the admin.
+  auth = createAuth(db, { initialAdminEmail: 'first@example.com' });
   mockedSend.mockReset();
 });
 

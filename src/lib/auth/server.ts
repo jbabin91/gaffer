@@ -2,10 +2,12 @@ import '@tanstack/react-start/server-only';
 
 import { inviteOnly } from 'better-auth-invitation-only';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { APIError } from 'better-auth/api';
 // `/minimal` drops Kysely; we use the drizzle adapter, so this trims the bundle.
 import { betterAuth } from 'better-auth/minimal';
 import { admin } from 'better-auth/plugins';
 import { tanstackStartCookies } from 'better-auth/tanstack-start';
+import { eq } from 'drizzle-orm';
 
 import { env } from '#/configs/env/server';
 import { type Database, getDb } from '#/db/client';
@@ -20,17 +22,33 @@ import { createInviteStore } from './invite-store';
 
 /**
  * `db` is injected rather than read from `getDb()` so integration tests can
- * bind the test container.
+ * bind the test container. `initialAdminEmail` likewise defaults to the env value
+ * but is overridable so tests can designate a bootstrap admin deterministically.
  */
-export function createAuth(db: Database) {
+export function createAuth(
+  db: Database,
+  options: { initialAdminEmail?: string } = {},
+) {
   // Fail on boot if prod lacks a mail transport — Better Auth swallows the
   // per-send throw, so this is the only place a misconfig surfaces.
   assertEmailTransportConfigured();
 
-  const hasUsers = async () => {
+  const designatedAdminEmail = (
+    options.initialAdminEmail ?? env.INITIAL_ADMIN_EMAIL
+  )
+    ?.trim()
+    .toLowerCase();
+
+  const adminExists = async () => {
+    // Gate the bootstrap on an admin existing (not on any user): the invite gate
+    // stays open and admin can be claimed only until the first admin lands.
     // Existence probe (not count) keeps this O(1) on the signup hot path; a query
-    // error propagates and fails the gate closed rather than reading as no users.
-    const rows = await db.select({ id: user.id }).from(user).limit(1);
+    // error propagates and fails closed rather than reading as no admin.
+    const rows = await db
+      .select({ id: user.id })
+      .from(user)
+      .where(eq(user.role, 'admin'))
+      .limit(1);
     return rows.length > 0;
   };
 
@@ -44,12 +62,18 @@ export function createAuth(db: Database) {
       user: {
         create: {
           before: async (newUser) => {
-            // First signup bootstraps the admin; the gate is off only while
-            // there are zero users, so the role can't be claimed once anyone
-            // exists. The zero-user read isn't serialized with the insert, so
-            // concurrent first signups can race — accepted for the
-            // single-operator bootstrap (see gf-fwi.2.7).
-            if (await hasUsers()) return;
+            if (await adminExists()) return;
+            // Bootstrap window: only the env-designated email may register, and it
+            // becomes admin. The unique email column is the single-winner guard —
+            // concurrent signups with that email can't both insert, so there's no
+            // admin-grant race. Everyone else gets the same invite-required
+            // response as the closed gate, so a visitor can't probe bootstrap state.
+            if (
+              !designatedAdminEmail ||
+              newUser.email.toLowerCase() !== designatedAdminEmail
+            ) {
+              throw new APIError('FORBIDDEN', { code: 'INVITE_REQUIRED' });
+            }
             return { data: { ...newUser, role: 'admin' } };
           },
         },
@@ -86,8 +110,9 @@ export function createAuth(db: Database) {
     },
     plugins: [
       admin(),
-      // `enabled: hasUsers` keeps the gate open for the first signup only.
-      inviteOnly({ enabled: hasUsers, inviteStore: createInviteStore(db) }),
+      // `enabled: adminExists` keeps the gate open only until the first admin
+      // bootstraps, then requires an invite for every subsequent signup.
+      inviteOnly({ enabled: adminExists, inviteStore: createInviteStore(db) }),
       // Must be last — forwards other plugins' Set-Cookie headers on the response.
       tanstackStartCookies(),
     ],

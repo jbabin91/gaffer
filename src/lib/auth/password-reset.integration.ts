@@ -23,8 +23,8 @@ let db: DB;
 beforeEach(async () => {
   await resetDb();
   db = getTestDb();
-  auth = createAuth(db);
-  // First user needs no invite.
+  // EMAIL is the designated bootstrap admin, so its signup passes the gate.
+  auth = createAuth(db, { initialAdminEmail: EMAIL });
   await post('/api/auth/sign-up/email', {
     email: EMAIL,
     name: 'Reset Manager',

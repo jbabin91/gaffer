@@ -24,7 +24,9 @@ let db: DB;
 beforeEach(async () => {
   await resetDb();
   db = getTestDb();
-  auth = createAuth(db);
+  // Designate the signup email as the bootstrap admin so the first signup
+  // succeeds through the otherwise-closed gate.
+  auth = createAuth(db, { initialAdminEmail: MANAGER.email });
 });
 
 // Exercises the session-discrimination contract the _app guard depends on.

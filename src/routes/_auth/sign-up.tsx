@@ -44,7 +44,7 @@ function SignUpPage() {
   return (
     <Card>
       <CardHeader
-        description="The first account becomes the admin. Otherwise an invite code is required."
+        description="Registration is invite-only — enter the code from your invitation."
         title="Create your account"
       />
       <form
@@ -82,7 +82,7 @@ function SignUpPage() {
             {(field) => (
               <field.TextField
                 label="Invite code"
-                placeholder="Leave blank if you're the first user"
+                placeholder="Code from your invitation"
                 type="text"
               />
             )}

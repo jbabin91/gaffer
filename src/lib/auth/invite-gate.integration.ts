@@ -176,34 +176,128 @@ describe('createInviteStore', () => {
 });
 
 describe('invite gate', () => {
-  it('bootstraps the first user as admin with the gate open', async () => {
-    const res = await signUp({
-      email: 'first@example.com',
-      name: 'First',
-      password: 'password123',
+  describe('first-admin bootstrap', () => {
+    const ADMIN_EMAIL = 'admin@example.com';
+
+    beforeEach(() => {
+      auth = createAuth(db, { initialAdminEmail: ADMIN_EMAIL });
     });
 
-    expect(res.status).toBe(200);
-    const [row] = await db.select().from(user);
-    expect(row?.role).toBe('admin');
+    it('bootstraps the designated admin with the gate open', async () => {
+      const res = await signUp({
+        email: ADMIN_EMAIL,
+        name: 'Admin',
+        password: 'password123',
+      });
+
+      expect(res.status).toBe(200);
+      const [row] = await db.select().from(user);
+      expect(row?.role).toBe('admin');
+    });
+
+    it('matches the designated email case-insensitively', async () => {
+      const res = await signUp({
+        email: 'ADMIN@example.com',
+        name: 'Admin',
+        password: 'password123',
+      });
+
+      expect(res.status).toBe(200);
+      const [row] = await db.select().from(user);
+      expect(row?.role).toBe('admin');
+    });
+
+    it('rejects a non-designated signup during bootstrap, creating no user', async () => {
+      const res = await signUp({
+        email: 'intruder@example.com',
+        name: 'Intruder',
+        password: 'password123',
+      });
+
+      expect(res.status).toBe(403);
+      expect(res.body?.code).toBe('INVITE_REQUIRED');
+      expect(await db.select().from(user)).toHaveLength(0);
+    });
+
+    it('closes the gate once the admin bootstraps', async () => {
+      const first = await signUp({
+        email: ADMIN_EMAIL,
+        name: 'Admin',
+        password: 'password123',
+      });
+      expect(first.status).toBe(200);
+
+      const second = await signUp({
+        email: 'second@example.com',
+        name: 'Second',
+        password: 'password123',
+      });
+
+      expect(second.status).toBe(403);
+      expect(second.body?.code).toBe('INVITE_REQUIRED');
+    });
+
+    it('matches a designated email configured in a different case', async () => {
+      auth = createAuth(db, { initialAdminEmail: 'ADMIN@example.com' });
+
+      const res = await signUp({
+        email: 'admin@example.com',
+        name: 'Admin',
+        password: 'password123',
+      });
+
+      expect(res.status).toBe(200);
+      const [row] = await db.select().from(user);
+      expect(row?.role).toBe('admin');
+    });
+
+    it('lets only one of two concurrent designated signups become admin', async () => {
+      // The unique email column is the single-winner guard: both signups grant
+      // admin in their before-hook, but only one insert survives.
+      const results = await Promise.all([
+        signUp({ email: ADMIN_EMAIL, name: 'Admin', password: 'password123' }),
+        signUp({ email: ADMIN_EMAIL, name: 'Admin', password: 'password123' }),
+      ]);
+
+      expect(results.filter((r) => r.status === 200)).toHaveLength(1);
+      const admins = await db.select().from(user).where(eq(user.role, 'admin'));
+      expect(admins).toHaveLength(1);
+      expect(await db.select().from(user)).toHaveLength(1);
+    });
+
+    it('reopens the bootstrap window when the admin is removed', async () => {
+      const bootstrap = await signUp({
+        email: ADMIN_EMAIL,
+        name: 'Admin',
+        password: 'password123',
+      });
+      expect(bootstrap.status).toBe(200);
+      await db.delete(user).where(eq(user.role, 'admin'));
+
+      const res = await signUp({
+        email: ADMIN_EMAIL,
+        name: 'Admin',
+        password: 'password123',
+      });
+
+      expect(res.status).toBe(200);
+      const [row] = await db.select().from(user).where(eq(user.role, 'admin'));
+      expect(row?.role).toBe('admin');
+    });
   });
 
-  it('closes the gate after the bootstrap signup', async () => {
-    const first = await signUp({
-      email: 'first@example.com',
-      name: 'First',
-      password: 'password123',
-    });
-    expect(first.status).toBe(200);
-
-    const second = await signUp({
-      email: 'second@example.com',
-      name: 'Second',
+  it('rejects every signup when no admin email is designated', async () => {
+    // Top-level auth has no designated admin, so a fresh DB is fully closed:
+    // bootstrapping requires INITIAL_ADMIN_EMAIL.
+    const res = await signUp({
+      email: 'anyone@example.com',
+      name: 'Anyone',
       password: 'password123',
     });
 
-    expect(second.status).toBe(403);
-    expect(second.body?.code).toBe('INVITE_REQUIRED');
+    expect(res.status).toBe(403);
+    expect(res.body?.code).toBe('INVITE_REQUIRED');
+    expect(await db.select().from(user)).toHaveLength(0);
   });
 
   it('rejects a code-less signup once a user exists', async () => {

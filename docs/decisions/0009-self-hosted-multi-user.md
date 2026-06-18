@@ -18,8 +18,9 @@ this to be a self-hostable tool a small, trusted group can share.
 Make the app **self-hosted, multi-user software**:
 
 - Anyone can stand up their own instance.
-- Per instance, the first user is the admin and invites close friends via an
-  **invite code**; open public sign-up is closed.
+- Per instance, a designated admin invites close friends via an **invite code**;
+  open public sign-up is closed. (The admin is bootstrapped by a configured email
+  — `0013`, gf-fwi.2.7 — not by whoever signs up first.)
 - **Online-first.** Offline is deferred — PGlite can return later as a per-user
   client over the same Postgres (`0005`).
 - Data is **user-owned and private**: every career — and its seasons, players,

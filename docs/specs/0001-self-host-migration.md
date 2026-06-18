@@ -42,7 +42,8 @@ the schema, repositories, UI, and query layer.
    browser runtime migrator). Still single-user, no auth.
 2. **Auth + invites.** Better Auth (email/password) + admin plugin; closed
    sign-up gated by `better-auth-invitation-only` (`0013`, verified compatible
-   with Better Auth 1.6). First user bootstraps as admin.
+   with Better Auth 1.6). The first admin is bootstrapped via a configured
+   `INITIAL_ADMIN_EMAIL` (gf-fwi.2.7); other signups need an invite.
 3. **User-owned data.** Add `userId` to `careers`; scope every career query and
    mutation to the authenticated user; enforce ownership in server functions.
 4. **Packaging.** Multi-stage Dockerfile, `docker-compose.yml` (app + Postgres),
