@@ -34,3 +34,4 @@ Use `docs/decisions/0000-template.md`.
 - `0012-data-acquisition.md` — ship the importer, not the data (Proposed)
 - `0013-auth-and-invites.md` — Better Auth + invite-only registration (Accepted)
 - `0014-state-management.md` — layered state model (Query / Router / Form / @xstate/store / React primitives) (Accepted)
+- `0015-auth-as-feature-module.md` — auth collapses into `src/modules/auth`; `lib/auth` retired (Accepted)
