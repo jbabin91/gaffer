@@ -1,3 +1,5 @@
+import '@tanstack/react-start/server-only';
+
 import { and, asc, eq, sql } from 'drizzle-orm';
 
 import type { Database, DB } from '#/db/client';

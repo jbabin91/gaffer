@@ -8,17 +8,18 @@ import {
   createStart,
 } from '@tanstack/react-start';
 
-import type { RequestLogBase } from '#/lib/logging/request-log';
+import { logger } from '#/lib/logging/logger';
+import {
+  makeRequestId,
+  runWithRequestContext,
+} from '#/lib/logging/request-context';
+import {
+  type RequestLogBase,
+  runInstrumented,
+} from '#/lib/logging/request-log';
 
 const requestLogger = createMiddleware({ type: 'request' }).server(
   async ({ handlerType, next, pathname, request, serverFnMeta }) => {
-    // pino + node:async_hooks are server-only; dynamic import keeps them out of
-    // the client bundle since this file is evaluated in both environments.
-    const { logger } = await import('#/lib/logging/logger');
-    const { runInstrumented } = await import('#/lib/logging/request-log');
-    const { makeRequestId, runWithRequestContext } =
-      await import('#/lib/logging/request-context');
-
     const log = logger.child({ reqId: makeRequestId(request) });
     const fields: Record<string, unknown> = {};
     const base: RequestLogBase = {

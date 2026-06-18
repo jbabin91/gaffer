@@ -5,7 +5,8 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { createCareerFn, listCareersFn } from '#/modules/career/api/careers';
+import { createCareerFn } from '#/modules/career/api/create-career';
+import { listCareersFn } from '#/modules/career/api/list-careers';
 import { type CreateCareerInput } from '#/modules/career/schemas/careers';
 
 export const careerQueries = {

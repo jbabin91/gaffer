@@ -17,7 +17,7 @@ function testDb(): DB {
   return dbRef.current;
 }
 
-vi.mock('#/modules/career/api/careers', async () => {
+vi.mock('#/modules/career/api/list-careers', async () => {
   const svc = await import('#/modules/career/services/careers');
   return { listCareersFn: () => svc.listCareers(testDb()) };
 });

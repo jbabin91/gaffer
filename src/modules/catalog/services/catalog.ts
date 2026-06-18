@@ -1,3 +1,5 @@
+import '@tanstack/react-start/server-only';
+
 import { ilike, sql } from 'drizzle-orm';
 
 import type { DB } from '#/db/client';
@@ -16,7 +18,6 @@ export async function searchCatalog(
   const term = query.trim();
   if (term.length < 2) return [];
 
-  // Escape LIKE wildcards so a literal % or _ in a name matches literally.
   const escaped = term.replaceAll(/[\\%_]/g, String.raw`\$&`);
 
   return db

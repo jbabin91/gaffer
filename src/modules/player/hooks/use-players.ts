@@ -6,14 +6,12 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import {
-  addPlayerFn,
-  getPlayerFn,
-  getPlayerSnapshotsFn,
-  listSquadFn,
-  recordSnapshotFn,
-  removePlayerFn,
-} from '#/modules/player/api/players';
+import { addPlayerFn } from '#/modules/player/api/add-player';
+import { getPlayerFn } from '#/modules/player/api/get-player';
+import { getPlayerSnapshotsFn } from '#/modules/player/api/get-player-snapshots';
+import { listSquadFn } from '#/modules/player/api/list-squad';
+import { recordSnapshotFn } from '#/modules/player/api/record-snapshot';
+import { removePlayerFn } from '#/modules/player/api/remove-player';
 import {
   type AddPlayerInput,
   type RecordSnapshotInput,

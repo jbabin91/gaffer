@@ -1,3 +1,5 @@
+import '@tanstack/react-start/server-only';
+
 import { isLoggableError } from './is-loggable-error';
 
 type RequestLogger = {

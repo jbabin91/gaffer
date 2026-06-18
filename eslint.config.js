@@ -57,15 +57,8 @@ export default defineConfig(
   },
   {
     files: ['src/**/*.{ts,tsx}'],
-    // api/ and test files use dynamic imports intentionally (bundle isolation,
-    // vi.mock factories).
-    ignores: [
-      '**/*.test.{ts,tsx}',
-      '**/*.integration.{ts,tsx}',
-      'src/lib/email.ts',
-      'src/modules/*/api/*.ts',
-      'src/start.ts',
-    ],
+    // Test files use dynamic imports intentionally (vi.mock factories).
+    ignores: ['**/*.test.{ts,tsx}', '**/*.integration.{ts,tsx}'],
     rules: {
       'no-restricted-syntax': [
         'error',

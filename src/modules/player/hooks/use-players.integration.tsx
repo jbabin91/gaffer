@@ -28,17 +28,47 @@ function testDb(): DB {
   return dbRef.current;
 }
 
-vi.mock('#/modules/player/api/players', async () => {
+vi.mock('#/modules/player/api/add-player', async () => {
   const svc = await import('#/modules/player/services/players');
   return {
     addPlayerFn: ({ data }: { data: AddPlayerArgs }) =>
       svc.addPlayer(testDb(), data.careerId, data.input),
+  };
+});
+
+vi.mock('#/modules/player/api/get-player', async () => {
+  const svc = await import('#/modules/player/services/players');
+  return {
     getPlayerFn: ({ data }: { data: string }) => svc.getPlayer(testDb(), data),
+  };
+});
+
+vi.mock('#/modules/player/api/get-player-snapshots', async () => {
+  const svc = await import('#/modules/player/services/players');
+  return {
     getPlayerSnapshotsFn: ({ data }: { data: string }) =>
       svc.getPlayerSnapshots(testDb(), data),
+  };
+});
+
+vi.mock('#/modules/player/api/list-squad', async () => {
+  const svc = await import('#/modules/player/services/players');
+  return {
     listSquadFn: ({ data }: { data: string }) => svc.listSquad(testDb(), data),
+  };
+});
+
+vi.mock('#/modules/player/api/record-snapshot', async () => {
+  const svc = await import('#/modules/player/services/players');
+  return {
     recordSnapshotFn: ({ data }: { data: RecordSnapshotArgs }) =>
       svc.recordSnapshot(testDb(), data.playerId, data.input),
+  };
+});
+
+vi.mock('#/modules/player/api/remove-player', async () => {
+  const svc = await import('#/modules/player/services/players');
+  return {
     removePlayerFn: ({ data }: { data: string }) =>
       svc.removePlayer(testDb(), data),
   };

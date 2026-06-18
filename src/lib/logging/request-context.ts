@@ -1,3 +1,5 @@
+import '@tanstack/react-start/server-only';
+
 import type { Logger } from 'pino';
 
 import { AsyncLocalStorage } from 'node:async_hooks';
