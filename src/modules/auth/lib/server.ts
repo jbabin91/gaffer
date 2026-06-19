@@ -2,7 +2,11 @@ import '@tanstack/react-start/server-only';
 
 import { inviteOnly } from 'better-auth-invitation-only';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { APIError } from 'better-auth/api';
+import {
+  APIError,
+  createAuthMiddleware,
+  getSessionFromCtx,
+} from 'better-auth/api';
 // `/minimal` drops Kysely; we use the drizzle adapter, so this trims the bundle.
 import { betterAuth } from 'better-auth/minimal';
 import { admin } from 'better-auth/plugins';
@@ -52,10 +56,8 @@ export function createAuth(
     .toLowerCase();
 
   const adminExists = async () => {
-    // Gate the bootstrap on an admin existing (not on any user): the invite gate
-    // stays open and admin can be claimed only until the first admin lands.
-    // Existence probe (not count) keeps this O(1) on the signup hot path; a query
-    // error propagates and fails closed rather than reading as no admin.
+    // Existence probe (not count) keeps this O(1) on the signup hot path; a
+    // query error propagates and fails closed rather than reading as no admin.
     const rows = await db
       .select({ id: user.id })
       .from(user)
@@ -75,19 +77,18 @@ export function createAuth(
         create: {
           before: async (newUser) => {
             if (await adminExists()) return;
-            // Bootstrap window: only the env-designated email may register, and it
-            // becomes admin. The unique email column is the single-winner guard —
-            // concurrent signups with that email can't both insert, so there's no
-            // admin-grant race. Everyone else gets the same invite-required
-            // response as the closed gate, so a visitor can't probe bootstrap state.
+            // Bootstrap window: only the env-designated email may register and
+            // become admin. Unique email column prevents an admin-grant race.
+            // Non-designated addresses get the same INVITE_REQUIRED response so
+            // a visitor can't probe whether bootstrap is open.
             if (
               !designatedAdminEmail ||
               newUser.email.toLowerCase() !== designatedAdminEmail
             ) {
               throw new APIError('FORBIDDEN', { code: 'INVITE_REQUIRED' });
             }
-            // Auto-verify the bootstrap admin: they own the instance/env, and
-            // verification gating must never lock out the person setting it up.
+            // Auto-verify the bootstrap admin: they own the env, and the
+            // verification gate must not lock out the person setting it up.
             return {
               data: { ...newUser, emailVerified: true, role: ADMIN_ROLE },
             };
@@ -101,8 +102,8 @@ export function createAuth(
       // compromise also evicts the attacker.
       revokeSessionsOnPasswordReset: true,
       sendResetPassword: async ({ token, user: recipient }) => {
-        // Email an app reset link, not Better Auth's `url`: that callback 400s
-        // without a client-supplied `callbackURL`. The reset page reads `?token`
+        // Use a custom URL rather than Better Auth's `url`: that callback 400s
+        // without a client-supplied callbackURL. The reset page reads ?token
         // and calls authClient.resetPassword.
         const resetUrl = new URL('/reset-password', env.BETTER_AUTH_URL);
         resetUrl.searchParams.set('token', token);
@@ -116,13 +117,42 @@ export function createAuth(
     emailVerification: {
       autoSignInAfterVerification: true,
       sendOnSignUp: true,
-      sendVerificationEmail: async ({ url, user: recipient }) => {
+      sendVerificationEmail: async ({ token, user: recipient }) => {
+        // Use a custom URL rather than Better Auth's `url`: the default
+        // callbackURL is '/' on signup. Both signup and resend point to
+        // /squad?verified=1 so the layout fires the toast; the JWT signs only
+        // the email, not the callback, so the param is safe to set here.
+        const verifyUrl = new URL(
+          '/api/auth/verify-email',
+          env.BETTER_AUTH_URL,
+        );
+        verifyUrl.searchParams.set('token', token);
+        verifyUrl.searchParams.set('callbackURL', '/squad?verified=1');
         await sendVerificationEmail({
           name: recipient.name,
           to: recipient.email,
-          url,
+          url: verifyUrl.href,
         });
       },
+    },
+    hooks: {
+      before: createAuthMiddleware(async (ctx) => {
+        // /send-verification-email accepts an arbitrary email, so without this
+        // hook a caller could request links for any account (inbox bombing).
+        // Require a session and overwrite the email with the session user's own,
+        // ignoring the client-supplied value. sendOnSignUp routes through the
+        // sendVerificationEmail callback, not this endpoint, so signup is unaffected.
+        if (ctx.path === '/send-verification-email') {
+          // getSessionFromCtx returns null for both missing and failed lookups.
+          const session = await getSessionFromCtx(ctx);
+          if (!session) {
+            throw new APIError('UNAUTHORIZED', { code: 'SESSION_REQUIRED' });
+          }
+          return {
+            context: { body: { ...ctx.body, email: session.user.email } },
+          };
+        }
+      }),
     },
     plugins: [
       admin(),
@@ -132,10 +162,8 @@ export function createAuth(
       // Must be last — forwards other plugins' Set-Cookie headers on the response.
       tanstackStartCookies(),
     ],
-    // The banner lets a signed-in user request a verification link, but the
-    // endpoint takes an email param — so a direct caller could bomb any
-    // unverified user's inbox. Cap it per IP. Better Auth rate-limiting is
-    // prod-only by default; the global default (100/60s) is far too loose here.
+    // Secondary cap behind the session-binding hook: the global default (100/60s)
+    // is far too loose; rate-limiting is prod-only by default in Better Auth.
     rateLimit: {
       customRules: { '/send-verification-email': { max: 2, window: 60 } },
       ...options.rateLimit,

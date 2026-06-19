@@ -77,7 +77,6 @@ describe('VerificationBanner', () => {
 
     await waitFor(() =>
       expect(sendVerificationEmail).toHaveBeenCalledWith({
-        callbackURL: '/squad',
         email: 'sam@example.com',
       }),
     );
@@ -126,24 +125,5 @@ describe('VerificationBanner', () => {
       expect(toastError).toHaveBeenCalledWith(NETWORK_ERROR_MESSAGE),
     );
     expect(logError).toHaveBeenCalled();
-  });
-
-  it('confirms once a shown-unverified user becomes verified', () => {
-    useSession.mockReturnValue(session(false));
-    const { rerender } = render(<VerificationBanner />);
-    expect(toastSuccess).not.toHaveBeenCalled();
-
-    useSession.mockReturnValue(session(true));
-    rerender(<VerificationBanner />);
-
-    expect(toastSuccess).toHaveBeenCalledOnce();
-  });
-
-  it('does not confirm for a user already verified on mount', () => {
-    useSession.mockReturnValue(session(true));
-
-    render(<VerificationBanner />);
-
-    expect(toastSuccess).not.toHaveBeenCalled();
   });
 });

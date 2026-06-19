@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '#/components/ui/button';
@@ -14,8 +14,6 @@ import {
 } from '#/modules/auth/messages';
 
 const COOLDOWN_MS = 60_000;
-// Where the verification link returns the user; they land here already signed in.
-const CALLBACK_URL = '/squad';
 
 export function VerificationBanner() {
   const { email, isSignedIn, verified } = useEmailVerified();
@@ -23,19 +21,6 @@ export function VerificationBanner() {
   const [isSending, setIsSending] = useState(false);
   const [cooldownUntil, setCooldownUntil] = useState(0);
   const [nowTs, setNowTs] = useState(() => Date.now());
-
-  // Toast only when a previously-seen-unverified user becomes verified, not when
-  // an already-verified session finishes loading. Focus-based session refetch
-  // means verifying in another tab clears the banner on return.
-  const sawUnverifiedRef = useRef(false);
-  useEffect(() => {
-    if (isSignedIn && !verified) {
-      sawUnverifiedRef.current = true;
-    } else if (verified && sawUnverifiedRef.current) {
-      sawUnverifiedRef.current = false;
-      toast.success("Email verified — you're all set.");
-    }
-  }, [isSignedIn, verified]);
 
   useEffect(() => {
     if (cooldownUntil <= Date.now()) return;
@@ -52,16 +37,14 @@ export function VerificationBanner() {
     if (!email || isSending || remaining > 0) return;
     setIsSending(true);
     try {
-      const { error } = await authClient.sendVerificationEmail({
-        callbackURL: CALLBACK_URL,
-        email,
-      });
+      // The server ignores this email and the callbackURL, binding the send to
+      // the session user and a fixed post-verify redirect; email satisfies the
+      // client type and keeps the success copy accurate.
+      const { error } = await authClient.sendVerificationEmail({ email });
       if (error) {
         if (error.status === 429) {
           toast.error(RATE_LIMITED_MESSAGE);
         } else {
-          // A non-429 rejection means the send is failing for real (5xx, mail
-          // provider down); surface curated copy but log the cause.
           logError(error, 'verification email send rejected');
           toast.error(VERIFICATION_SEND_FAILED_MESSAGE);
         }
