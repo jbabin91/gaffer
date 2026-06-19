@@ -1,7 +1,6 @@
 import { CheckIcon, MinusIcon } from '@heroicons/react/20/solid';
 import {
   CheckboxButton,
-  type CheckboxButtonProps,
   CheckboxField,
   type CheckboxFieldProps,
 } from 'react-aria-components/Checkbox';
@@ -49,8 +48,17 @@ export function Checkbox({
               <CheckIcon data-slot="check-indicator" />
             ) : null;
 
+            // A string child renders as a plain span, not a second
+            // CheckboxButton: each CheckboxButton emits its own hidden input, so
+            // nesting one inside another yields two inputs (and a label-in-label)
+            // for one logical control.
             const content = isStringChild ? (
-              <CheckboxLabel>{children}</CheckboxLabel>
+              <span
+                className="text-base/6 sm:text-sm/6"
+                data-slot="control-label"
+              >
+                {children}
+              </span>
             ) : (
               children
             );
@@ -88,15 +96,5 @@ export function Checkbox({
         )}
       </CheckboxButton>
     </CheckboxField>
-  );
-}
-
-export function CheckboxLabel({ className, ...props }: CheckboxButtonProps) {
-  return (
-    <CheckboxButton
-      className={cx('text-base/6 sm:text-sm/6', className)}
-      data-slot="control-label"
-      {...props}
-    />
   );
 }
