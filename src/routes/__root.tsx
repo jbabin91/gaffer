@@ -11,6 +11,7 @@ import {
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
+import { AccountLink } from '#/components/account-link';
 import { RootError } from '#/components/root-error';
 import { SignOutButton } from '#/components/sign-out-button';
 import { ThemeSwitcher } from '#/components/theme-switcher';
@@ -62,7 +63,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               <Link className="font-display text-lg font-semibold" to="/">
                 FC 26 Career Hub
               </Link>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
+                <AccountLink />
                 <SignOutButton />
                 <ThemeSwitcher />
               </div>

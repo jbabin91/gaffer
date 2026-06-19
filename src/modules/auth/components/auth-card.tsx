@@ -13,6 +13,9 @@ type AuthCardProps = {
   children: ReactNode;
   description: string;
   footer: ReactNode;
+  // Auth pages stack a submit button over links; settings cards want a single
+  // right-aligned button. Defaults to the stacked layout.
+  footerClassName?: string;
   onSubmit: () => void;
   title: string;
 };
@@ -21,6 +24,7 @@ export function AuthCard({
   children,
   description,
   footer,
+  footerClassName = 'flex-col items-stretch gap-3',
   onSubmit,
   title,
 }: AuthCardProps) {
@@ -36,9 +40,7 @@ export function AuthCard({
         }}
       >
         <CardContent className="space-y-4">{children}</CardContent>
-        <CardFooter className="flex-col items-stretch gap-3">
-          {footer}
-        </CardFooter>
+        <CardFooter className={footerClassName}>{footer}</CardFooter>
       </form>
     </Card>
   );

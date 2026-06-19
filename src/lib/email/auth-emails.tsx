@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 
 import { render, toPlainText } from 'react-email';
 
+import ChangeEmailConfirmation from './templates/change-email';
 import ResetPasswordEmail from './templates/reset-password';
 import VerifyEmail from './templates/verify-email';
 import { sendEmail } from './transport';
@@ -48,6 +49,24 @@ export function sendPasswordResetEmail({
   return deliver(
     <ResetPasswordEmail name={name} url={url} />,
     'Reset your password',
+    to,
+    url,
+  );
+}
+
+/**
+ * Sent to the user's CURRENT address to authorize an email change.
+ * @see {@link sendVerificationEmail} — same delivery contract.
+ */
+export function sendChangeEmailConfirmation({
+  name,
+  newEmail,
+  to,
+  url,
+}: AuthEmail & { newEmail: string }): Promise<void> {
+  return deliver(
+    <ChangeEmailConfirmation name={name} newEmail={newEmail} url={url} />,
+    'Confirm your new email address',
     to,
     url,
   );

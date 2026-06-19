@@ -24,6 +24,7 @@ import {
   verification,
 } from '#/db/schema';
 import {
+  sendChangeEmailConfirmation,
   sendPasswordResetEmail,
   sendVerificationEmail,
 } from '#/lib/email/auth-emails';
@@ -152,6 +153,18 @@ export function createAuth(
             context: { body: { ...ctx.body, email: session.user.email } },
           };
         }
+        // Only verified accounts may change email (confirmed via the old
+        // address). An unverified, invite-bound user changing to an arbitrary
+        // address would escape the email-bound invite, so reject them.
+        if (ctx.path === '/change-email') {
+          const session = await getSessionFromCtx(ctx);
+          if (!session) {
+            throw new APIError('UNAUTHORIZED', { code: 'SESSION_REQUIRED' });
+          }
+          if (!session.user.emailVerified) {
+            throw new APIError('FORBIDDEN', { code: 'EMAIL_NOT_VERIFIED' });
+          }
+        }
       }),
     },
     plugins: [
@@ -169,6 +182,32 @@ export function createAuth(
       ...options.rateLimit,
     },
     secret: env.BETTER_AUTH_SECRET,
+    user: {
+      changeEmail: {
+        enabled: true,
+        // No updateEmailWithoutVerification: the change is confirmed via a link
+        // to the CURRENT (old) address before it takes effect, so a hijacked
+        // session can't silently move the account to an attacker's inbox.
+        sendChangeEmailConfirmation: async ({
+          newEmail,
+          token,
+          user: recipient,
+        }) => {
+          const confirmUrl = new URL(
+            '/api/auth/verify-email',
+            env.BETTER_AUTH_URL,
+          );
+          confirmUrl.searchParams.set('token', token);
+          confirmUrl.searchParams.set('callbackURL', '/account');
+          await sendChangeEmailConfirmation({
+            name: recipient.name,
+            newEmail,
+            to: recipient.email,
+            url: confirmUrl.href,
+          });
+        },
+      },
+    },
     // cookieCache off: a revoked session (revokeSessionsOnPasswordReset) must
     // miss immediately; a warm signed cookie would linger until its maxAge.
   });

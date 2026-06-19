@@ -1,6 +1,7 @@
 import { render, toPlainText } from 'react-email';
 import { describe, expect, it } from 'vitest';
 
+import ChangeEmailConfirmation from './templates/change-email';
 import ResetPasswordEmail from './templates/reset-password';
 import VerifyEmail from './templates/verify-email';
 
@@ -24,6 +25,21 @@ describe('email templates', () => {
 
     expect(html).toContain('Reset your password');
     expect(html).toContain('Hi,');
+    expect(html).toContain(ACTION_URL);
+    expect(toPlainText(html)).toContain(ACTION_URL);
+  });
+
+  it('renders the change-email confirmation with the new address and url', async () => {
+    const html = await render(
+      <ChangeEmailConfirmation
+        name="Sam"
+        newEmail="new@example.com"
+        url={ACTION_URL}
+      />,
+    );
+
+    expect(html).toContain('Confirm your new email');
+    expect(html).toContain('new@example.com');
     expect(html).toContain(ACTION_URL);
     expect(toPlainText(html)).toContain(ACTION_URL);
   });

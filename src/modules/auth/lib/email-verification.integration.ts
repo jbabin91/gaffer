@@ -167,3 +167,70 @@ describe('signup verification link', () => {
     );
   });
 });
+
+describe('change-email (verified, old-address confirmation)', () => {
+  async function signUpAdmin() {
+    const auth = createAuth(db, { initialAdminEmail: 'admin@example.com' });
+    const res = await post(auth, '/api/auth/sign-up/email', {
+      email: 'admin@example.com',
+      name: 'Admin',
+      password: 'password123',
+    });
+    const cookie = res.headers.get('set-cookie');
+    if (res.status !== 200 || !cookie) {
+      throw new Error(`admin signup failed: ${res.status}`);
+    }
+    return { auth, cookie };
+  }
+
+  it('confirms via the current address and defers the change', async () => {
+    const { auth, cookie } = await signUpAdmin();
+    vi.mocked(sendEmail).mockClear();
+
+    const res = await post(
+      auth,
+      '/api/auth/change-email',
+      { newEmail: 'new@example.com' },
+      { cookie },
+    );
+
+    expect(res.status).toBe(200);
+    const sent = vi.mocked(sendEmail).mock.calls[0]?.[0];
+    // Confirmation goes to the OLD address, names the new one, lands on /account.
+    expect(sent).toMatchObject({ to: 'admin@example.com' });
+    expect(sent?.html).toContain('new@example.com');
+    expect(new URL(sent?.url ?? '').searchParams.get('callbackURL')).toBe(
+      '/account',
+    );
+    // The email is unchanged until the confirmation link is clicked.
+    expect(
+      await db.select().from(user).where(eq(user.email, 'new@example.com')),
+    ).toHaveLength(0);
+  });
+
+  it('rejects change-email for an unverified account', async () => {
+    const { auth, cookie } = await signUpInvitee();
+    vi.mocked(sendEmail).mockClear();
+
+    const res = await post(
+      auth,
+      '/api/auth/change-email',
+      { newEmail: 'new@example.com' },
+      { cookie },
+    );
+
+    expect(res.status).toBe(403);
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+
+  it('rejects an unauthenticated change-email, sending nothing', async () => {
+    const auth = createAuth(db, { initialAdminEmail: 'admin@example.com' });
+
+    const res = await post(auth, '/api/auth/change-email', {
+      newEmail: 'new@example.com',
+    });
+
+    expect(res.status).toBe(401);
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+});

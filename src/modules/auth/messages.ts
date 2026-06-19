@@ -15,6 +15,12 @@ export const RATE_LIMITED_MESSAGE =
 export const VERIFICATION_SEND_FAILED_MESSAGE =
   'Could not send the link. Try again in a moment.';
 
+export const CHANGE_PASSWORD_FAILED_MESSAGE =
+  'Could not change your password. Try again in a moment.';
+
+export const CHANGE_EMAIL_FAILED_MESSAGE =
+  'Could not change your email. Try again in a moment.';
+
 // A discriminated union, not a both-optional product: TanStack Form treats any
 // object with a `fields` key as an errored form, so `{}` / `{ fields: {} }` would
 // be an errored-but-invisible state. `undefined` is the only "no error" signal.
@@ -44,4 +50,13 @@ export function signUpFormError(code: string | undefined): AuthSubmitErrors {
       return { form: 'Could not create your account.' };
     }
   }
+}
+
+export function changePasswordFormError(
+  code: string | undefined,
+): AuthSubmitErrors {
+  if (code === 'INVALID_PASSWORD') {
+    return { fields: { currentPassword: 'That password is incorrect.' } };
+  }
+  return { form: CHANGE_PASSWORD_FAILED_MESSAGE };
 }
