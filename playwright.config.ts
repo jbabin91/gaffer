@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 import {
   E2E_ADMIN_EMAIL,
+  E2E_AUTH_SECRET,
   E2E_BASE_URL,
   E2E_DATABASE_URL,
   E2E_PORT,
@@ -24,6 +25,7 @@ export default defineConfig({
     // BETTER_AUTH_URL must match the e2e port; it seeds better-auth's baseURL
     // and trustedOrigins, so auth calls on :3100 are rejected at the dev value (:3000).
     env: {
+      BETTER_AUTH_SECRET: E2E_AUTH_SECRET,
       BETTER_AUTH_URL: E2E_BASE_URL,
       DATABASE_URL: E2E_DATABASE_URL,
       INITIAL_ADMIN_EMAIL: E2E_ADMIN_EMAIL,

@@ -7,6 +7,10 @@ export const E2E_BASE_URL = `http://localhost:${E2E_PORT}`;
 // gate admits it on a fresh e2e DB. Wired into the server as INITIAL_ADMIN_EMAIL.
 export const E2E_ADMIN_EMAIL = 'manager@example.com';
 
+// Pinned so harness-minted verification tokens (HS256 JWTs) are accepted by the
+// e2e server. Passed as BETTER_AUTH_SECRET, overriding the developer's .env value.
+export const E2E_AUTH_SECRET = 'e2e-better-auth-secret-32-bytes-minimum-xx';
+
 export const E2E_DB_PORT = 5440;
 export const E2E_DB_NAME = 'fc2026_e2e';
 export const E2E_DB_USER = 'postgres';
