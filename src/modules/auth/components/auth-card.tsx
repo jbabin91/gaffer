@@ -28,6 +28,7 @@ export function AuthCard({
     <Card>
       <CardHeader description={description} title={title} />
       <form
+        className="flex flex-col gap-(--gutter)"
         method="post"
         onSubmit={(event) => {
           event.preventDefault();
