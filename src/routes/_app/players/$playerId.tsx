@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader } from '#/components/ui/card';
 import { Heading } from '#/components/ui/heading';
 import { Loader } from '#/components/ui/loader';
 import { useMounted } from '#/hooks/use-mounted';
+import { GatedActionButton } from '#/modules/auth/components/gated-action-button';
+import { VerifiedGate } from '#/modules/auth/components/verified-gate';
 import { DevelopmentChart } from '#/modules/player/components/development-chart';
 import { RecordSnapshotModal } from '#/modules/player/components/record-snapshot-modal';
 import {
@@ -64,22 +66,33 @@ function PlayerPage() {
             {p.nationality && <span>{p.nationality}</span>}
           </div>
         </div>
-        {/* Gate on loaded history so the modal seeds the next week, not week 1. */}
-        {snapshots.isSuccess ? (
-          <RecordSnapshotModal
-            careerId={p.careerId}
-            defaults={{
-              inGameWeek: (latest?.inGameWeek ?? 0) + 1,
-              overall: p.overall ?? undefined,
-              potential: p.potential ?? undefined,
-            }}
-            playerId={p.id}
-          />
-        ) : (
-          <Button isDisabled intent="outline">
-            Record snapshot
-          </Button>
-        )}
+        <VerifiedGate
+          fallback={
+            <GatedActionButton
+              gateMessage="Verify your email to record snapshots."
+              intent="outline"
+            >
+              Record snapshot
+            </GatedActionButton>
+          }
+        >
+          {/* Gate on loaded history so the modal seeds the next week, not week 1. */}
+          {snapshots.isSuccess ? (
+            <RecordSnapshotModal
+              careerId={p.careerId}
+              defaults={{
+                inGameWeek: (latest?.inGameWeek ?? 0) + 1,
+                overall: p.overall ?? undefined,
+                potential: p.potential ?? undefined,
+              }}
+              playerId={p.id}
+            />
+          ) : (
+            <Button isDisabled intent="outline">
+              Record snapshot
+            </Button>
+          )}
+        </VerifiedGate>
       </header>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">

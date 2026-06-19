@@ -381,6 +381,8 @@ describe('invite gate', () => {
     expect(inv?.useCount).toBe(1);
     expect(inv?.usedAt).not.toBeNull();
     expect(inv?.usedBy).toBe(invitee?.id);
+    // Auto-verify is scoped to the bootstrap admin; an invited user is not.
+    expect(invitee?.emailVerified).toBe(false);
     expect(await db.select().from(invitePending)).toHaveLength(0);
   });
 });

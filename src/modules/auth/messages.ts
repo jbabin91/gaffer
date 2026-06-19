@@ -12,6 +12,9 @@ export const RESET_LINK_INVALID_MESSAGE =
 export const RATE_LIMITED_MESSAGE =
   'Too many attempts. Wait a moment and try again.';
 
+export const VERIFICATION_SEND_FAILED_MESSAGE =
+  'Could not send the link. Try again in a moment.';
+
 // A discriminated union, not a both-optional product: TanStack Form treats any
 // object with a `fields` key as an errored form, so `{}` / `{ fields: {} }` would
 // be an errored-but-invisible state. `undefined` is the only "no error" signal.

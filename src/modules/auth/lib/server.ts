@@ -34,7 +34,12 @@ import { createInviteStore } from './invite-store';
  */
 export function createAuth(
   db: Database,
-  options: { initialAdminEmail?: string } = {},
+  options: {
+    initialAdminEmail?: string;
+    // Force-enable rate limiting in tests; prod relies on Better Auth's default
+    // (on in production, off in dev/test).
+    rateLimit?: { enabled?: boolean };
+  } = {},
 ) {
   // Fail on boot if prod lacks a mail transport — Better Auth swallows the
   // per-send throw, so this is the only place a misconfig surfaces.
@@ -81,7 +86,11 @@ export function createAuth(
             ) {
               throw new APIError('FORBIDDEN', { code: 'INVITE_REQUIRED' });
             }
-            return { data: { ...newUser, role: ADMIN_ROLE } };
+            // Auto-verify the bootstrap admin: they own the instance/env, and
+            // verification gating must never lock out the person setting it up.
+            return {
+              data: { ...newUser, emailVerified: true, role: ADMIN_ROLE },
+            };
           },
         },
       },
@@ -123,6 +132,14 @@ export function createAuth(
       // Must be last — forwards other plugins' Set-Cookie headers on the response.
       tanstackStartCookies(),
     ],
+    // The banner lets a signed-in user request a verification link, but the
+    // endpoint takes an email param — so a direct caller could bomb any
+    // unverified user's inbox. Cap it per IP. Better Auth rate-limiting is
+    // prod-only by default; the global default (100/60s) is far too loose here.
+    rateLimit: {
+      customRules: { '/send-verification-email': { max: 2, window: 60 } },
+      ...options.rateLimit,
+    },
     secret: env.BETTER_AUTH_SECRET,
     // cookieCache off: a revoked session (revokeSessionsOnPasswordReset) must
     // miss immediately; a warm signed cookie would linger until its maxAge.

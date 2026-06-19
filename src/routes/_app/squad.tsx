@@ -3,7 +3,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import type { Player } from '#/db/schema';
 
 import { Badge } from '#/components/ui/badge';
-import { Card } from '#/components/ui/card';
+import { Card, CardFooter, CardHeader } from '#/components/ui/card';
 import { Heading } from '#/components/ui/heading';
 import { Loader } from '#/components/ui/loader';
 import {
@@ -15,6 +15,8 @@ import {
   TableRow,
 } from '#/components/ui/table';
 import { useMounted } from '#/hooks/use-mounted';
+import { GatedActionButton } from '#/modules/auth/components/gated-action-button';
+import { VerifiedGate } from '#/modules/auth/components/verified-gate';
 import { CareerSwitcher } from '#/modules/career/components/career-switcher';
 import { CreateCareerForm } from '#/modules/career/components/create-career-form';
 import { useActiveCareer } from '#/modules/career/hooks/use-active-career';
@@ -35,7 +37,23 @@ function SquadPage() {
   if (careers.length === 0) {
     return (
       <main className="mx-auto max-w-5xl px-4 py-12">
-        <CreateCareerForm onCreated={selectCareer} />
+        <VerifiedGate
+          fallback={
+            <Card className="mx-auto max-w-lg">
+              <CardHeader
+                description="Verify your email to create your first career — use the link we sent you, or resend it from the banner above."
+                title="Start a career"
+              />
+              <CardFooter className="justify-end">
+                <GatedActionButton gateMessage="Verify your email to create your first career.">
+                  Create career
+                </GatedActionButton>
+              </CardFooter>
+            </Card>
+          }
+        >
+          <CreateCareerForm onCreated={selectCareer} />
+        </VerifiedGate>
       </main>
     );
   }
@@ -55,7 +73,17 @@ function SquadPage() {
             careers={careers}
             onSelect={selectCareer}
           />
-          {activeCareerId && <AddPlayerModal careerId={activeCareerId} />}
+          {activeCareerId && (
+            <VerifiedGate
+              fallback={
+                <GatedActionButton gateMessage="Verify your email to add players.">
+                  Add player
+                </GatedActionButton>
+              }
+            >
+              <AddPlayerModal careerId={activeCareerId} />
+            </VerifiedGate>
+          )}
         </div>
       </header>
 
