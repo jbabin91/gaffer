@@ -10,7 +10,7 @@ import { cx } from '#/lib/utils/primitive';
 
 export const buttonStyles = tv({
   base: [
-    '[--btn-border:var(--color-fg)]/15 [--btn-icon-active:var(--btn-fg)] [--btn-outline:var(--btn-bg)] [--btn-radius:calc(var(--radius-lg)-1px)] [--btn-ring:var(--btn-bg)]/20',
+    '[--btn-border:var(--fg)]/15 [--btn-icon-active:var(--btn-fg)] [--btn-outline:var(--btn-bg)] [--btn-radius:calc(var(--radius-lg)-1px)] [--btn-ring:var(--btn-bg)]/20',
     'bg-(--btn-bg) text-(--btn-fg) outline-(--btn-outline) ring-(--btn-ring) hover:bg-(--btn-overlay)',
     'relative isolate inline-flex items-center justify-center border border-(--btn-border) font-medium hover:no-underline',
     'focus:outline-0 focus-visible:outline focus-visible:outline-offset-2 focus-visible:ring-2 focus-visible:ring-offset-3 focus-visible:ring-offset-bg',
@@ -23,19 +23,19 @@ export const buttonStyles = tv({
   variants: {
     intent: {
       danger:
-        '[--btn-bg:var(--color-danger)] [--btn-fg:var(--color-danger-fg)] [--btn-icon:color-mix(in_oklab,var(--color-danger-fg)_60%,var(--danger)_40%)] [--btn-overlay:color-mix(in_oklab,var(--color-white)_10%,var(--color-danger)_90%)]',
+        '[--btn-bg:var(--danger)] [--btn-fg:var(--danger-fg)] [--btn-icon:color-mix(in_oklab,var(--danger-fg)_60%,var(--danger)_40%)] [--btn-overlay:color-mix(in_oklab,var(--color-white)_10%,var(--danger)_90%)]',
       outline:
-        'border-border [--btn-bg:transparent] [--btn-icon:var(--color-muted-fg)] [--btn-outline:var(--color-ring)] [--btn-overlay:var(--color-secondary)] [--btn-ring:var(--color-ring)]/20',
+        'border-border [--btn-bg:transparent] [--btn-icon:var(--muted-fg)] [--btn-outline:var(--ring)] [--btn-overlay:var(--secondary)] [--btn-ring:var(--ring)]/20',
       plain:
-        'border-transparent [--btn-bg:transparent] [--btn-icon:var(--color-muted-fg)] [--btn-outline:var(--color-ring)] [--btn-overlay:var(--color-secondary)] [--btn-ring:var(--color-ring)]/20',
+        'border-transparent [--btn-bg:transparent] [--btn-icon:var(--muted-fg)] [--btn-outline:var(--ring)] [--btn-overlay:var(--secondary)] [--btn-ring:var(--ring)]/20',
       primary:
-        '[--btn-bg:var(--color-primary)] [--btn-fg:var(--color-primary-fg)] [--btn-icon-active:var(--primary-fg)]/80 [--btn-icon:var(--primary-fg)]/60 [--btn-overlay:color-mix(in_oklab,var(--color-primary-fg)_10%,var(--color-primary)_90%)]',
+        '[--btn-bg:var(--primary)] [--btn-fg:var(--primary-fg)] [--btn-icon-active:var(--primary-fg)]/80 [--btn-icon:var(--primary-fg)]/60 [--btn-overlay:color-mix(in_oklab,var(--primary-fg)_10%,var(--primary)_90%)]',
       secondary:
-        '[--btn-bg:var(--color-secondary)] [--btn-fg:var(--color-secondary-fg)] [--btn-icon:var(--color-muted-fg)] [--btn-outline:var(--color-secondary-fg)] [--btn-overlay:color-mix(in_oklab,var(--color-secondary-fg)_10%,var(--color-secondary)_90%)] [--btn-ring:var(--color-muted-fg)]/20',
+        '[--btn-bg:var(--secondary)] [--btn-fg:var(--secondary-fg)] [--btn-icon:var(--muted-fg)] [--btn-outline:var(--secondary-fg)] [--btn-overlay:color-mix(in_oklab,var(--secondary-fg)_10%,var(--secondary)_90%)] [--btn-ring:var(--muted-fg)]/20',
       success:
-        '[--btn-bg:var(--color-success)] [--btn-fg:var(--color-success-fg)] [--btn-icon:color-mix(in_oklab,var(--color-success-fg)_60%,var(--success)_40%)] [--btn-overlay:color-mix(in_oklab,var(--color-white)_10%,var(--color-success)_90%)]',
+        '[--btn-bg:var(--success)] [--btn-fg:var(--success-fg)] [--btn-icon:color-mix(in_oklab,var(--success-fg)_60%,var(--success)_40%)] [--btn-overlay:color-mix(in_oklab,var(--color-white)_10%,var(--success)_90%)]',
       warning:
-        '[--btn-bg:var(--color-warning)] [--btn-fg:var(--color-warning-fg)] [--btn-icon:var(--color-warning-fg)]/60 [--btn-overlay:color-mix(in_oklab,var(--color-white)_10%,var(--color-warning)_90%)]',
+        '[--btn-bg:var(--warning)] [--btn-fg:var(--warning-fg)] [--btn-icon:var(--warning-fg)]/60 [--btn-overlay:color-mix(in_oklab,var(--color-white)_10%,var(--warning)_90%)]',
     },
     isCircle: { false: 'rounded-lg', true: 'rounded-full' },
 

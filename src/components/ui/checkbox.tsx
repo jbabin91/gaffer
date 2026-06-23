@@ -79,7 +79,7 @@ export function Checkbox({
                     'size-4.5 *:data-[slot=check-indicator]:size-4 sm:size-4 sm:*:data-[slot=check-indicator]:size-3.5',
                     'in-disabled:bg-muted',
                     (isSelected || isIndeterminate) && [
-                      'inset-ring-(--checkbox-ring,var(--color-ring)) bg-(--checkbox-bg,var(--color-primary)) text-(--checkbox-fg,var(--color-primary-fg))',
+                      'inset-ring-(--checkbox-ring,var(--ring)) bg-(--checkbox-bg,var(--primary)) text-(--checkbox-fg,var(--primary-fg))',
                       'group-invalid:inset-ring/70 group-invalid:bg-danger group-invalid:text-danger-fg dark:group-invalid:inset-ring-danger-subtle-fg/70',
                     ],
                     isInvalid &&

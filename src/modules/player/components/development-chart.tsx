@@ -17,9 +17,9 @@ export function DevelopmentChart({ snapshots }: DevelopmentChartProps) {
   }
 
   const config: ChartConfig = {
-    overall: { color: 'var(--color-primary)', label: 'Overall' },
+    overall: { color: 'var(--primary)', label: 'Overall' },
     ...(snapshots.some((s) => s.potential !== null) && {
-      potential: { color: 'var(--color-muted-fg)', label: 'Potential' },
+      potential: { color: 'var(--muted-fg)', label: 'Potential' },
     }),
   };
 

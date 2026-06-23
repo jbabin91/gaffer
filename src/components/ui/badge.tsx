@@ -12,18 +12,18 @@ export const badgeStyles = tv({
   variants: {
     intent: {
       danger:
-        '[--badge-bg:var(--color-danger-subtle)] [--badge-fg:var(--color-danger-subtle-fg)] [--badge-overlay:var(--color-danger)]/20',
-      info: '[--badge-bg:var(--color-info-subtle)] [--badge-fg:var(--color-info-subtle-fg)] [--badge-overlay:var(--color-sky-500)]/20',
+        '[--badge-bg:var(--danger-subtle)] [--badge-fg:var(--danger-subtle-fg)] [--badge-overlay:var(--danger)]/20',
+      info: '[--badge-bg:var(--info-subtle)] [--badge-fg:var(--info-subtle-fg)] [--badge-overlay:var(--color-sky-500)]/20',
       outline:
-        '[--badge-border:var(--color-border)] [--badge-overlay:var(--color-secondary)]/20',
+        '[--badge-border:var(--border)] [--badge-overlay:var(--secondary)]/20',
       primary:
-        '[--badge-bg:var(--color-primary-subtle)] [--badge-fg:var(--color-primary-subtle-fg)] [--badge-overlay:var(--color-primary)]/20',
+        '[--badge-bg:var(--primary-subtle)] [--badge-fg:var(--primary-subtle-fg)] [--badge-overlay:var(--primary)]/20',
       secondary:
-        '[--badge-bg:var(--color-secondary)] [--badge-fg:var(--color-secondary-fg)] [--badge-overlay:var(--color-muted-fg)]/25',
+        '[--badge-bg:var(--secondary)] [--badge-fg:var(--secondary-fg)] [--badge-overlay:var(--muted-fg)]/25',
       success:
-        '[--badge-bg:var(--color-success-subtle)] [--badge-fg:var(--color-success-subtle-fg)] [--badge-overlay:var(--color-success)]/20',
+        '[--badge-bg:var(--success-subtle)] [--badge-fg:var(--success-subtle-fg)] [--badge-overlay:var(--success)]/20',
       warning:
-        '[--badge-bg:var(--color-warning-subtle)] [--badge-fg:var(--color-warning-subtle-fg)] [--badge-overlay:var(--color-warning)]/20',
+        '[--badge-bg:var(--warning-subtle)] [--badge-fg:var(--warning-subtle-fg)] [--badge-overlay:var(--warning)]/20',
     },
     isCircle: {
       false: 'rounded-sm px-[calc(--spacing(1.5)-1px)]',

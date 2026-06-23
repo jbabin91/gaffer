@@ -11,36 +11,36 @@ export function Toast(props: ToasterProps) {
       className="toaster group"
       style={
         {
-          '--error-bg': 'var(--color-danger-subtle)',
+          '--error-bg': 'var(--danger-subtle)',
           '--error-border':
             'color-mix(in oklab, var(--danger-subtle-fg) 20%, transparent)',
-          '--error-text': 'var(--color-danger-subtle-fg)',
+          '--error-text': 'var(--danger-subtle-fg)',
 
-          '--info-bg': 'var(--color-info-subtle)',
+          '--info-bg': 'var(--info-subtle)',
           '--info-border':
             'color-mix(in oklab, var(--info-subtle-fg) 20%, transparent)',
-          '--info-text': 'var(--color-info-subtle-fg)',
+          '--info-text': 'var(--info-subtle-fg)',
 
-          '--normal-bg': 'var(--color-overlay)',
-          '--normal-border': 'var(--color-border)',
-          '--normal-text': 'var(--color-overlay-fg)',
+          '--normal-bg': 'var(--overlay)',
+          '--normal-border': 'var(--border)',
+          '--normal-text': 'var(--overlay-fg)',
 
-          '--success-bg': 'var(--color-success-subtle)',
+          '--success-bg': 'var(--success-subtle)',
           '--success-border':
             'color-mix(in oklab, var(--success-subtle-fg) 20%, transparent)',
-          '--success-text': 'var(--color-success-subtle-fg)',
+          '--success-text': 'var(--success-subtle-fg)',
 
-          '--warning-bg': 'var(--color-warning-subtle)',
+          '--warning-bg': 'var(--warning-subtle)',
           '--warning-border':
             'color-mix(in oklab, var(--warning-subtle-fg) 20%, transparent)',
-          '--warning-text': 'var(--color-warning-subtle-fg)',
+          '--warning-text': 'var(--warning-subtle-fg)',
         } as React.CSSProperties
       }
       theme={theme as ToasterProps['theme']}
       toastOptions={{
         className: twJoin(
           'not-has-data-[slot=note]:backdrop-blur-3xl will-change-transform *:data-[slot=note]:relative *:data-[slot=note]:z-50 *:data-icon:mt-0.5 *:data-icon:self-start has-data-description:*:data-icon:mt-1',
-          '**:data-action:[--normal-bg:var(--color-primary-fg)] **:data-action:[--normal-text:var(--color-primary)]',
+          '**:data-action:[--normal-bg:var(--primary-fg)] **:data-action:[--normal-text:var(--primary)]',
         ),
       }}
       {...props}

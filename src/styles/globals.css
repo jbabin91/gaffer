@@ -266,7 +266,7 @@ body {
 /* Reusable interaction-state primitives — applied across components instead of
    re-spelling focus/disabled per primitive. */
 @utility status-focused {
-  outline: 2px solid var(--color-ring);
+  outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
 
